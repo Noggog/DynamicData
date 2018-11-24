@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace DynamicData.List.Internal
@@ -18,6 +19,8 @@ namespace DynamicData.List.Internal
             _sourceList = sourceList ?? throw new ArgumentNullException(nameof(sourceList));
         }
 
+        public T this[int index] => ((IObservableList<T>)_sourceList)[index];
+
         public IObservable<int> CountChanged => _sourceList.CountChanged;
 
         public IEnumerable<T> Items => _sourceList.Items;
@@ -32,6 +35,16 @@ namespace DynamicData.List.Internal
         public void Dispose()
         {
             _sourceList.Dispose();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _sourceList.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _sourceList.GetEnumerator();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DynamicData.Kernel;
 
@@ -39,6 +40,10 @@ namespace DynamicData.Cache.Internal
 
         public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _cache.KeyValues;
 
+        public IEnumerable<TObject> Values => _cache.Values;
+
+        public TObject this[TKey key] => _cache[key];
+
         public Optional<TObject> Lookup(TKey key)
         {
             return _cache.Lookup(key);
@@ -47,6 +52,26 @@ namespace DynamicData.Cache.Internal
         public void Dispose()
         {
             _cache.Dispose();
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            return _cache.ContainsKey(key);
+        }
+
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            return _cache.TryGetValue(key, out value);
+        }
+
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            return _cache.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _cache.GetEnumerator();
         }
     }
 }

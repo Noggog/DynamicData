@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -22,6 +23,19 @@ namespace DynamicData
         private readonly IDisposable _cleanUp;
         private readonly object _locker = new object();
         private readonly object _writeLock = new object();
+
+        /// <inheritdoc />
+        public T this[int index]
+        {
+            get => _readerWriter[index];
+            set
+            {
+                this.Edit((list) =>
+                {
+                    list[index] = value;
+                });
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceList{T}"/> class.
@@ -125,5 +139,65 @@ namespace DynamicData
         {
             _cleanUp.Dispose();
         }
+
+        /// <inheritdoc />
+        public IEnumerator<T> GetEnumerator()
+        {
+            return this.Items.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        public int IndexOf(T item)
+        {
+            return this.IndexOf(item);
+        }
+
+        /// <inheritdoc />
+        public bool Contains(T item)
+        {
+            return this._readerWriter.Contains(item);
+        }
+
+        /// <inheritdoc />
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            this._readerWriter.CopyTo(array, arrayIndex);
+        }
+
+        #region Hidden IList Implementations
+        bool ICollection<T>.IsReadOnly => false;
+
+        T IReadOnlyList<T>.this[int index] => this[index];
+
+        void IList<T>.Insert(int index, T item)
+        {
+            this.Insert(index, item);
+        }
+
+        void IList<T>.RemoveAt(int index)
+        {
+            this.RemoveAt(index);
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            this.Add(item);
+        }
+
+        void ICollection<T>.Clear()
+        {
+            this.Clear();
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            return this.Remove(item);
+        }
+        #endregion
     }
 }

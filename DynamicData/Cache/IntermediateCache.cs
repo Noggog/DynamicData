@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DynamicData.Kernel;
 // ReSharper disable once CheckNamespace
@@ -12,7 +13,7 @@ namespace DynamicData
     /// <typeparam name="TKey">The type of the key.</typeparam>
     public sealed class IntermediateCache<TObject, TKey> : IIntermediateCache<TObject, TKey>
     {
-        private readonly ObservableCache<TObject, TKey> _innnerCache;
+        private readonly ObservableCache<TObject, TKey> _innerCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IntermediateCache{TObject, TKey}"/> class.
@@ -22,7 +23,7 @@ namespace DynamicData
         public IntermediateCache(IObservable<IChangeSet<TObject, TKey>> source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            _innnerCache = new ObservableCache<TObject, TKey>(source);
+            _innerCache = new ObservableCache<TObject, TKey>(source);
         }
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace DynamicData
         /// </summary>
         public IntermediateCache()
         {
-            _innnerCache = new ObservableCache<TObject, TKey>();
+            _innerCache = new ObservableCache<TObject, TKey>();
         }
 
         #region Delegated Members
@@ -43,13 +44,13 @@ namespace DynamicData
         /// <param name="updateAction">The update action.</param>
         public void Edit(Action<ICacheUpdater<TObject, TKey>> updateAction)
         {
-            _innnerCache.UpdateFromIntermediate(updateAction);
+            _innerCache.UpdateFromIntermediate(updateAction);
         }
 
         /// <summary>
         /// A count changed observable starting with the current count
         /// </summary>
-        public IObservable<int> CountChanged => _innnerCache.CountChanged;
+        public IObservable<int> CountChanged => _innerCache.CountChanged;
 
         /// <summary>
         /// Returns a filtered changeset of cache changes preceeded with the initial state
@@ -58,7 +59,7 @@ namespace DynamicData
         /// <returns></returns>
         public IObservable<IChangeSet<TObject, TKey>> Connect(Func<TObject, bool> predicate)
         {
-            return _innnerCache.Connect(predicate);
+            return _innerCache.Connect(predicate);
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace DynamicData
         /// <returns></returns>
         public IObservable<IChangeSet<TObject, TKey>> Connect()
         {
-            return _innnerCache.Connect();
+            return _innerCache.Connect();
         }
 
         /// <summary>
@@ -77,28 +78,35 @@ namespace DynamicData
         /// <returns></returns>
         public IObservable<Change<TObject, TKey>> Watch(TKey key)
         {
-            return _innnerCache.Watch(key);
+            return _innerCache.Watch(key);
         }
 
         /// <summary>
         /// The total count of cached items
         /// </summary>
-        public int Count => _innnerCache.Count;
+        public int Count => _innerCache.Count;
 
         /// <summary>
         /// Gets the Items
         /// </summary>
-        public IEnumerable<TObject> Items => _innnerCache.Items;
+        public IEnumerable<TObject> Items => _innerCache.Items;
+
+        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
+
+        /// <summary>
+        /// Gets value for given key.  Throws exception if missing.
+        /// </summary>
+        public TObject this[TKey key] => _innerCache[key];
 
         /// <summary>
         /// Gets the key value pairs
         /// </summary>
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _innnerCache.KeyValues;
+        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _innerCache.KeyValues;
 
         /// <summary>
         /// Gets the keys
         /// </summary>
-        public IEnumerable<TKey> Keys => _innnerCache.Keys;
+        public IEnumerable<TKey> Keys => _innerCache.Keys;
 
         /// <summary>
         /// Lookup a single item using the specified key.
@@ -110,12 +118,12 @@ namespace DynamicData
         /// <returns></returns>
         public Optional<TObject> Lookup(TKey key)
         {
-            return _innnerCache.Lookup(key);
+            return _innerCache.Lookup(key);
         }
 
         internal IChangeSet<TObject, TKey> GetInitialUpdates(Func<TObject, bool> filter = null)
         {
-            return _innnerCache.GetInitialUpdates(filter);
+            return _innerCache.GetInitialUpdates(filter);
         }
 
         /// <summary>
@@ -123,7 +131,36 @@ namespace DynamicData
         /// </summary>
         public void Dispose()
         {
-            _innnerCache.Dispose();
+            _innerCache.Dispose();
+        }
+
+        /// <summary>
+        /// Returns whether key exists in cache.
+        /// </summary>
+        public bool ContainsKey(TKey key)
+        {
+            return _innerCache.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// Tries and gets value associated with a key.
+        /// </summary>
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            return _innerCache.TryGetValue(key, out value);
+        }
+
+        /// <summary>
+        /// Returns enumerator of all key value pairs in cache
+        /// </summary>
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            return _innerCache.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         #endregion

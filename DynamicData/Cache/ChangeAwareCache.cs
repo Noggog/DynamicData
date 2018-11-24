@@ -32,6 +32,9 @@ namespace DynamicData
         public IEnumerable<TKey> Keys => _data?.Keys ?? Enumerable.Empty<TKey>();
 
         /// <inheritdoc />
+        public TObject this[TKey key] => this._data[key];
+
+        /// <inheritdoc />
         public ChangeAwareCache()
         {
         }
@@ -50,6 +53,17 @@ namespace DynamicData
 
         /// <inheritdoc />
         public Optional<TObject> Lookup(TKey key) => _data?.Lookup(key) ?? Optional<TObject>.None;
+
+        /// <inheritdoc />
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            if (_data == null)
+            {
+                value = default;
+                return false;
+            }
+            return _data.TryGetValue(key, out value);
+        }
 
         /// <summary>
         /// Adds the item to the cache without checking whether there is an existing value in the cache
@@ -109,7 +123,11 @@ namespace DynamicData
             }
         }
 
-
+        /// <inheritdoc />
+        public bool ContainsKey(TKey key)
+        {
+            return _data?.ContainsKey(key) ?? false;
+        }
 
         /// <summary>
         /// Raises an evaluate change for the specified keys

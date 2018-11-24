@@ -438,6 +438,7 @@ namespace DynamicData
         {
             return _innerList.Contains(item);
         }
+
         /// <summary>
         /// Copies the entire collection to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>

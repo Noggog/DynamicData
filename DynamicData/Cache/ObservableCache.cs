@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -18,6 +19,8 @@ namespace DynamicData
 
         private readonly object _locker = new object();
         private readonly object _writeLock = new object();
+
+        public TObject this[TKey key] => _readerWriter[key];
 
         public ObservableCache(IObservable<IChangeSet<TObject, TKey>> source)
         {
@@ -148,6 +151,31 @@ namespace DynamicData
         {
             lock (_locker)
                 _changes.OnError(exception);
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            return this._readerWriter.ContainsKey(key);
+        }
+
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            return this._readerWriter.TryGetValue(key, out value);
+        }
+
+        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
+
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            foreach (var item in _readerWriter.KeyValues)
+            {
+                yield return item;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

@@ -9,6 +9,17 @@ namespace DynamicData.List.Internal
         private readonly ChangeAwareList<T> _data = new ChangeAwareList<T>();
         private readonly object _locker = new object();
 
+        public T this[int index]
+        {
+            get
+            {
+                lock (_locker)
+                {
+                    return _data[index];
+                }
+            }
+        }
+
         public IChangeSet<T> Write(IChangeSet<T> changes)
         {
             if (changes == null) throw new ArgumentNullException(nameof(changes));
@@ -49,5 +60,21 @@ namespace DynamicData.List.Internal
         }
 
         public int Count => _data.Count;
+
+        public bool Contains(T item)
+        {
+            lock (_locker)
+            {
+                return _data.Contains(item);
+            }
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            lock (_locker)
+            {
+                _data.CopyTo(array, arrayIndex);
+            }
+        }
     }
 }

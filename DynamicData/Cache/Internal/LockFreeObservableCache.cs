@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -152,9 +153,37 @@ namespace DynamicData.Cache.Internal
         /// </summary>
         public int Count => _innerCache.Count;
 
+        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
+
+        /// <inheritdoc />
+        public TObject this[TKey key] => this._innerCache[key];
+
         /// <summary
         /// >Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose() => _cleanUp.Dispose();
+
+        /// <inheritdoc />
+        public bool ContainsKey(TKey key)
+        {
+            return this._innerCache.ContainsKey(key);
+        }
+
+        /// <inheritdoc />
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            return this._innerCache.TryGetValue(key, out value);
+        }
+
+        /// <inheritdoc />
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            return this.KeyValues.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }

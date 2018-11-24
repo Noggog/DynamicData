@@ -4,13 +4,22 @@ using DynamicData.Kernel;
 
 namespace DynamicData.Cache.Internal
 {
-    internal sealed class ReaderWriter<TObject, TKey> 
+    internal sealed class ReaderWriter<TObject, TKey>
     {
         private readonly Func<TObject, TKey> _keySelector;
-        private readonly ChangeAwareCache<TObject, TKey> _changeAwareCache ;
-        private readonly Dictionary<TKey,TObject> _data = new Dictionary<TKey, TObject>();
-        
+        private readonly ChangeAwareCache<TObject, TKey> _changeAwareCache;
+        private readonly Dictionary<TKey, TObject> _data = new Dictionary<TKey, TObject>();
+
         private readonly object _locker = new object();
+
+        public TObject this[TKey key]
+        {
+            get
+            {
+                lock (_locker)
+                    return _data[key];
+            }
+        }
 
         public ReaderWriter(Func<TObject, TKey> keySelector = null)
         {
@@ -26,7 +35,7 @@ namespace DynamicData.Cache.Internal
             ChangeSet<TObject, TKey> result;
             lock (_locker)
             {
-                
+
                 if (notifyChanges)
                 {
                     _changeAwareCache.Clone(changes);
@@ -68,19 +77,19 @@ namespace DynamicData.Cache.Internal
             }
             return result;
         }
-        
+
         private CacheUpdater<TObject, TKey> CreateUpdater(bool notifyChanges)
         {
-            return notifyChanges 
-                ? new CacheUpdater<TObject, TKey>(_changeAwareCache, _keySelector) 
+            return notifyChanges
+                ? new CacheUpdater<TObject, TKey>(_changeAwareCache, _keySelector)
                 : new CacheUpdater<TObject, TKey>(_data, _keySelector);
         }
 
         #endregion
 
         #region Accessors
-        
-        public ChangeSet<TObject, TKey> GetInitialUpdates( Func<TObject, bool> filter = null)
+
+        public ChangeSet<TObject, TKey> GetInitialUpdates(Func<TObject, bool> filter = null)
         {
             ChangeSet<TObject, TKey> result;
             lock (_locker)
@@ -156,9 +165,21 @@ namespace DynamicData.Cache.Internal
         {
             Optional<TObject> result;
             lock (_locker)
-                result= _data.Lookup(key);
-   
+                result = _data.Lookup(key);
+
             return result;
+        }
+
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            lock (_locker)
+                return _data.TryGetValue(key, out value);
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            lock (_locker)
+                return _data.ContainsKey(key);
         }
 
         public int Count
