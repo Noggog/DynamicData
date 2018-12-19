@@ -3876,7 +3876,7 @@ namespace DynamicData
         public static IDisposable PopulateFrom<TObject, TKey>(this ISourceCache<TObject, TKey> source, IObservable<IEnumerable<TObject>> observable)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            return observable.Subscribe(source.AddOrUpdate);
+            return observable.Subscribe(source.Set);
         }
 
         /// <summary>
@@ -3895,7 +3895,7 @@ namespace DynamicData
         public static IDisposable PopulateFrom<TObject, TKey>(this ISourceCache<TObject, TKey> source, IObservable<TObject> observable)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            return observable.Subscribe(source.AddOrUpdate);
+            return observable.Subscribe(source.Set);
         }
 
         #endregion
@@ -4169,7 +4169,7 @@ namespace DynamicData
         /// <param name="source">The source.</param>
         /// <param name="item">The item.</param>
         /// <exception cref="System.ArgumentNullException">source</exception>
-        public static void AddOrUpdate<TObject, TKey>(this ISourceCache<TObject, TKey> source, TObject item)
+        public static void Set<TObject, TKey>(this ISourceCache<TObject, TKey> source, TObject item)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             source.Edit(updater => updater.AddOrUpdate(item));
@@ -4185,7 +4185,7 @@ namespace DynamicData
         /// <param name="source">The source.</param>
         /// <param name="items">The items.</param>
         /// <exception cref="System.ArgumentNullException">source</exception>
-        public static void AddOrUpdate<TObject, TKey>(this ISourceCache<TObject, TKey> source, IEnumerable<TObject> items)
+        public static void Set<TObject, TKey>(this ISourceCache<TObject, TKey> source, IEnumerable<TObject> items)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             source.Edit(updater => updater.AddOrUpdate(items));
