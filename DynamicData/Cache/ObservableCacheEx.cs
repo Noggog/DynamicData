@@ -146,7 +146,7 @@ namespace DynamicData
         /// <returns></returns>
         public static IObservable<IChangeSet<TObject, TKey>> IgnoreSameReferenceUpdate<TObject, TKey>(this IObservable<IChangeSet<TObject, TKey>> source)
         {
-            return source.IgnoreUpdateWhen((c, p) => ReferenceEquals(c,p));
+            return source.IgnoreUpdateWhen((c, p) => ReferenceEquals(c, p));
         }
 
         /// <summary>
@@ -320,7 +320,7 @@ namespace DynamicData
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
         public static IObservable<PropertyValue<TObject, TValue>> WhenPropertyChanged<TObject, TKey, TValue>([NotNull] this IObservable<IChangeSet<TObject, TKey>> source,
-                                                                                                             [NotNull] Expression<Func<TObject, TValue>> propertyAccessor, 
+                                                                                                             [NotNull] Expression<Func<TObject, TValue>> propertyAccessor,
                                                                                                              bool notifyOnInitialValue = true)
             where TObject : INotifyPropertyChanged
         {
@@ -394,7 +394,7 @@ namespace DynamicData
             return new SubscribeMany<TObject, TKey>(source, subscriptionFactory).Run();
         }
 
-        
+
         /// <summary>
         /// Callback for each item as and when it is being added to the stream
         /// </summary>
@@ -612,7 +612,7 @@ namespace DynamicData
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (reevaluator == null) throw new ArgumentNullException(nameof(reevaluator));
-            return new AutoRefresh<TObject, TKey, TAny>(source, reevaluator, changeSetBuffer,  scheduler).Run();
+            return new AutoRefresh<TObject, TKey, TAny>(source, reevaluator, changeSetBuffer, scheduler).Run();
         }
 
         /// <summary>
@@ -945,8 +945,8 @@ namespace DynamicData
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (pauseIfTrueSelector == null) throw new ArgumentNullException(nameof(pauseIfTrueSelector));
-            
-            return new BatchIf<TObject, TKey>(source, pauseIfTrueSelector, timeOut, intialPauseState,scheduler: scheduler).Run();
+
+            return new BatchIf<TObject, TKey>(source, pauseIfTrueSelector, timeOut, intialPauseState, scheduler: scheduler).Run();
         }
 
         /// <summary>
@@ -1682,44 +1682,44 @@ namespace DynamicData
             return new Sort<TObject, TKey>(source, comparer, sortOptimisations, null, resorter, resetThreshold).Run();
         }
 
-	    /// <summary>
-	    /// Converts moves changes to remove + add
-	    /// </summary>
-	    /// <typeparam name="TObject">The type of the object.</typeparam>
-	    /// <typeparam name="TKey">The type of the key.</typeparam>
-	    /// <param name="source">The source.</param>
-	    /// <returns>the same SortedChangeSets, except all moves are replaced with remove + add.</returns>
-	    public static IObservable<ISortedChangeSet<TObject, TKey>> TreatMovesAsRemoveAdd<TObject, TKey>(
-		    this IObservable<ISortedChangeSet<TObject, TKey>> source)
-	    {
-		    if (source == null) throw new ArgumentNullException(nameof(source));
+        /// <summary>
+        /// Converts moves changes to remove + add
+        /// </summary>
+        /// <typeparam name="TObject">The type of the object.</typeparam>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns>the same SortedChangeSets, except all moves are replaced with remove + add.</returns>
+        public static IObservable<ISortedChangeSet<TObject, TKey>> TreatMovesAsRemoveAdd<TObject, TKey>(
+            this IObservable<ISortedChangeSet<TObject, TKey>> source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
-		    IEnumerable<Change<TObject, TKey>> ReplaceMoves(IChangeSet<TObject, TKey> items)
-		    {
-			    foreach (var change in items)
-			    {
-				    if (change.Reason == ChangeReason.Moved)
-				    {
-					    yield return new Change<TObject, TKey>(
-						    ChangeReason.Remove,
-						    change.Key,
-						    change.Current, change.PreviousIndex);
+            IEnumerable<Change<TObject, TKey>> ReplaceMoves(IChangeSet<TObject, TKey> items)
+            {
+                foreach (var change in items)
+                {
+                    if (change.Reason == ChangeReason.Moved)
+                    {
+                        yield return new Change<TObject, TKey>(
+                            ChangeReason.Remove,
+                            change.Key,
+                            change.Current, change.PreviousIndex);
 
-					    yield return new Change<TObject, TKey>(
-						    ChangeReason.Add,
-						    change.Key,
-						    change.Current,
-						    change.CurrentIndex);
-				    }
-				    else
-				    {
-					    yield return change;
-				    }
-			    }
-		    }
+                        yield return new Change<TObject, TKey>(
+                            ChangeReason.Add,
+                            change.Key,
+                            change.Current,
+                            change.CurrentIndex);
+                    }
+                    else
+                    {
+                        yield return change;
+                    }
+                }
+            }
 
-		    return source.Select(changes => new SortedChangeSet<TObject, TKey>(changes.SortedItems, ReplaceMoves(changes)));
-	    }
+            return source.Select(changes => new SortedChangeSet<TObject, TKey>(changes.SortedItems, ReplaceMoves(changes)));
+        }
 
 
         #endregion
@@ -2210,7 +2210,7 @@ namespace DynamicData
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             var change = new Change<TObject, TKey>(ChangeReason.Add, key, item);
-            return source.StartWith(new ChangeSet<TObject, TKey>{change});
+            return source.StartWith(new ChangeSet<TObject, TKey> { change });
         }
 
         #endregion
@@ -2355,7 +2355,7 @@ namespace DynamicData
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (transformFactory == null) throw new ArgumentNullException(nameof(transformFactory));
 
-            if (forceTransform!=null)
+            if (forceTransform != null)
                 return new TransformWithForcedTransform<TDestination, TSource, TKey>(source, transformFactory, forceTransform).Run();
 
             return new Transform<TDestination, TSource, TKey>(source, transformFactory).Run();
@@ -2435,7 +2435,7 @@ namespace DynamicData
             return source?.Select(_ =>
             {
                 bool Transformer(TSource item, TKey key) => true;
-                return (Func<TSource, TKey, bool>) Transformer;
+                return (Func<TSource, TKey, bool>)Transformer;
             });
         }
 
@@ -2444,7 +2444,7 @@ namespace DynamicData
             return source?.Select(condition =>
             {
                 bool Transformer(TSource item, TKey key) => condition(item);
-                return (Func<TSource, TKey, bool>) Transformer;
+                return (Func<TSource, TKey, bool>)Transformer;
             });
         }
 
@@ -2585,7 +2585,7 @@ namespace DynamicData
         /// <param name="source">The source.</param>
         /// <param name="manyselector">The manyselector.</param>
         /// <param name="keySelector">The key selector which must be unique across all</param>
-        public static IObservable<IChangeSet<TDestination, TDestinationKey>> TransformMany<TDestination, TDestinationKey, TSource, TSourceKey>( this IObservable<IChangeSet<TSource, TSourceKey>> source,
+        public static IObservable<IChangeSet<TDestination, TDestinationKey>> TransformMany<TDestination, TDestinationKey, TSource, TSourceKey>(this IObservable<IChangeSet<TSource, TSourceKey>> source,
             Func<TSource, ReadOnlyObservableCollection<TDestination>> manyselector,
             Func<TDestination, TDestinationKey> keySelector)
         {
@@ -4482,6 +4482,23 @@ namespace DynamicData
             return source.Subscribe(changes => detination.Edit(updater => updater.Clone(changes)));
         }
 
+        public static TObject TryCreateValue<TObject, TKey>(this ISourceCache<TObject, TKey> source, TKey key, Func<TKey, TObject> createFunc)
+        {
+            TObject ret = default;
+            source.Edit((dict) =>
+            {
+                if (dict.ContainsKey(key))
+                {
+                    ret = dict[key];
+                }
+                else
+                {
+                    ret = createFunc(key);
+                    dict.AddOrUpdate(ret);
+                }
+            });
+            return ret;
+        }
         #endregion
 
         #region Switch

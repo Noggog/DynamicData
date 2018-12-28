@@ -15,7 +15,7 @@ namespace DynamicData
     /// </summary>
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface ICacheUpdater<TObject, TKey> : IQuery<TObject, TKey>
+    public interface ICacheUpdater<TObject, TKey> : IQuery<TObject, TKey>, IReadOnlyDictionary<TKey, TObject>
     {
         /// <summary>
         /// Adds or updates the specified  key value pairs 

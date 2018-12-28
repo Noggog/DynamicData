@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DynamicData.Kernel;
 
@@ -12,6 +13,10 @@ namespace DynamicData.Cache.Internal
         public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _data;
         public IEnumerable<TObject> Items => _data.Values;
         public IEnumerable<TKey> Keys => _data.Keys;
+
+        public IEnumerable<TObject> Values => _data.Values;
+
+        public TObject this[TKey key] => _data[key];
 
         public static readonly Cache<TObject, TKey> Empty = new Cache<TObject, TKey>();
 
@@ -112,6 +117,26 @@ namespace DynamicData.Cache.Internal
         public void Refresh(TKey key)
         {
 
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            return _data.ContainsKey(key);
+        }
+
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            return _data.TryGetValue(key, out value);
+        }
+
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

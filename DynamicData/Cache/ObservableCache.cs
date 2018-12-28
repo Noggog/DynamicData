@@ -67,7 +67,7 @@ namespace DynamicData
             if (updateAction == null) throw new ArgumentNullException(nameof(updateAction));
             lock (_writeLock)
             {
-                InvokeNext(_readerWriter.Write(updateAction, _changes.HasObservers));
+                InvokeNext(_readerWriter.Write(updateAction, notifyChanges: _changes.HasObservers));
             }
         }
 
@@ -161,6 +161,11 @@ namespace DynamicData
         public bool TryGetValue(TKey key, out TObject value)
         {
             return this._readerWriter.TryGetValue(key, out value);
+        }
+
+        public TObject TryCreateValue(TKey key, Func<TKey, TObject> creator)
+        {
+            return this._readerWriter.TryCreateValue(key, creator, notifyChanges: _changes.HasObservers);
         }
 
         IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;

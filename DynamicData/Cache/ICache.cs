@@ -12,8 +12,11 @@ namespace DynamicData
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <seealso cref="DynamicData.IQuery{TObject, TKey}" />
-    public interface ICache<TObject, TKey> : IQuery<TObject, TKey>
+    public interface ICache<TObject, TKey> : IQuery<TObject, TKey>, IReadOnlyDictionary<TKey, TObject>
     {
+        new IEnumerable<TKey> Keys { get; }
+        new int Count { get; }
+
         /// <summary>
         /// Clones the cache from the specified changes
         /// </summary>

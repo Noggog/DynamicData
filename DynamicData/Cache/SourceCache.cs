@@ -158,7 +158,6 @@ namespace DynamicData
         {
             return this.GetEnumerator();
         }
-
         #endregion
     }
 }

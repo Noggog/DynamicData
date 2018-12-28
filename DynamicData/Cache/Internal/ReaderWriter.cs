@@ -85,6 +85,18 @@ namespace DynamicData.Cache.Internal
                 : new CacheUpdater<TObject, TKey>(_data, _keySelector);
         }
 
+        public TObject TryCreateValue(TKey key, Func<TKey, TObject> creator, bool notifyChanges)
+        {
+            lock (_locker)
+            {
+                if (_data.TryGetValue(key, out var existingVal)) return existingVal;
+                var updater = CreateUpdater(notifyChanges);
+                var obj = creator(key);
+                updater.AddOrUpdate(obj);
+                return obj;
+            }
+        }
+
         #endregion
 
         #region Accessors
