@@ -1155,6 +1155,17 @@ namespace DynamicData
             return source.QueryWhenChanged().Select(resultSelector);
         }
 
+        public static IObservable<int> CollectionCount<TObject, TKey>(this IObservable<IChangeSet<TObject, TKey>> source)
+        {
+            int count = 0;
+            return source.Select(changeSet =>
+            {
+                count += changeSet.Adds;
+                count -= changeSet.Removes;
+                return count;
+            });
+        }
+
         /// <summary>
         /// The latest copy of the cache is exposed for querying i)  after each modification to the underlying data ii) upon subscription
         /// </summary>
