@@ -34,7 +34,7 @@ namespace DynamicData
     /// </summary>
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface IObservableCache<TObject, TKey> : IConnectableCache<TObject, TKey>, IDisposable, IReadOnlyDictionary<TKey, TObject>
+    public interface IObservableCache<TObject, TKey> : IConnectableCache<TObject, TKey>, IDisposable, IReadOnlyCache<TObject, TKey>
     {
         /// <summary>
         /// Gets the Items

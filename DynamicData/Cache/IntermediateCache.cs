@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DynamicData.Kernel;
 // ReSharper disable once CheckNamespace
 namespace DynamicData
@@ -91,7 +92,7 @@ namespace DynamicData
         /// </summary>
         public IEnumerable<TObject> Items => _innerCache.Items;
 
-        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
+        IEnumerable<TObject> IReadOnlyCache<TObject, TKey>.Values => this.Items;
 
         /// <summary>
         /// Gets value for given key.  Throws exception if missing.
@@ -155,12 +156,17 @@ namespace DynamicData
         /// </summary>
         public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
         {
-            return _innerCache.GetEnumerator();
+            return _innerCache.KeyValues.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator()
+        {
+            return _innerCache.KeyValues.Select<KeyValuePair<TKey, TObject>, IKeyValue<TObject, TKey>>(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value)).GetEnumerator();
         }
 
         #endregion

@@ -66,12 +66,14 @@ namespace DynamicData.Cache.Internal
 
         public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
         {
-            return _cache.GetEnumerator();
+            return _cache.KeyValues.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _cache.GetEnumerator();
         }
+
+        IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator() => _cache.GetEnumerator();
     }
 }

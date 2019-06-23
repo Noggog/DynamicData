@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -136,6 +137,8 @@ namespace DynamicData
 
         public int Count => _readerWriter.Count;
 
+        public IEnumerable<TObject> Values => throw new NotImplementedException();
+
         public void Dispose()
         {
             _cleanUp.Dispose();
@@ -168,19 +171,16 @@ namespace DynamicData
             return this._readerWriter.TryCreateValue(key, creator, notifyChanges: _changes.HasObservers);
         }
 
-        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
-
-        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
-        {
-            foreach (var item in _readerWriter.KeyValues)
-            {
-                yield return item;
-            }
-        }
+        public IEnumerator<TObject> GetEnumerator() => this.Items.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator()
+        {
+            return this.KeyValues.Select<KeyValuePair<TKey, TObject>, IKeyValue<TObject, TKey>>(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value)).GetEnumerator();
         }
     }
 }

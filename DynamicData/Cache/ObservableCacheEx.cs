@@ -4636,5 +4636,21 @@ namespace DynamicData
         }
 
         #endregion
+
+        #region TryGetValue
+        public static bool TryGetValue<TObject, TKey>(this IReadOnlyCache<TObject, TKey> cache, TKey key, out TObject value)
+        {
+            if (cache.ContainsKey(key))
+            {
+                value = cache[key];
+                return true;
+            }
+            else
+            {
+                value = default;
+                return false;
+            }
+        }
+        #endregion
     }
 }
