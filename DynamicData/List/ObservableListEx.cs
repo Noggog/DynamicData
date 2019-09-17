@@ -1471,12 +1471,14 @@ namespace DynamicData
         public static IObservable<int> CollectionCount<TObject>(this IObservable<IChangeSet<TObject>> source)
         {
             int count = 0;
-            return source.Select(changeSet =>
-            {
-                count += changeSet.Adds;
-                count -= changeSet.Removes;
-                return count;
-            });
+            return source
+                .Select(changeSet =>
+                {
+                    count += changeSet.Adds;
+                    count -= changeSet.Removes;
+                    return count;
+                })
+                .StartWith(0);
         }
 
         /// <summary>
