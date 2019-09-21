@@ -1428,6 +1428,19 @@ namespace DynamicData
             return new QueryWhenChanged<TObject, TKey, TValue>(source, itemChangedTrigger).Run();
         }
 
+        public static IObservable<int> CollectionCount<TObject, TKey>(this IObservable<IChangeSet<TObject, TKey>> source)
+        {
+            int count = 0;
+            return source
+                .Select(changeSet =>
+                {
+                    count += changeSet.Adds;
+                    count -= changeSet.Removes;
+                    return count;
+                })
+                .StartWith(0);
+        }
+
         /// <summary>
         /// Converts the changeset into a fully formed collection. Each change in the source results in a new collection
         /// </summary>
