@@ -45,13 +45,8 @@ namespace DynamicData
     /// </summary>
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface IObservableCache<TObject, TKey> : IConnectableCache<TObject, TKey>, IDisposable
+    public interface IObservableCache<TObject, TKey> : IConnectableCache<TObject, TKey>, IDisposable, IReadOnlyDictionary<TKey, TObject>
     {
-        /// <summary>
-        /// Gets the keys
-        /// </summary>
-        IEnumerable<TKey> Keys { get; }
-
         /// <summary>
         /// Gets the Items
         /// </summary>
@@ -75,6 +70,6 @@ namespace DynamicData
         /// <summary>
         /// The total count of cached items
         /// </summary>
-        int Count { get; }
+        new int Count { get; }
     }
 }

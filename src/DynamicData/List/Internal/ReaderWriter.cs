@@ -13,6 +13,17 @@ namespace DynamicData.List.Internal
         private readonly object _locker = new object();
         private bool _updateInProgress;
 
+        public T this[int index]
+        {
+            get
+            {
+                lock (_locker)
+                {
+                    return _data[index];
+                }
+            }
+        }
+
         public IChangeSet<T> Write(IChangeSet<T> changes)
         {
             if (changes == null)
@@ -131,6 +142,22 @@ namespace DynamicData.List.Internal
                 {
                     return _data.Count;
                 }
+            }
+        }
+
+        public bool Contains(T item)
+        {
+            lock (_locker)
+            {
+                return _data.Contains(item);
+            }
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            lock (_locker)
+            {
+                _data.CopyTo(array, arrayIndex);
             }
         }
     }

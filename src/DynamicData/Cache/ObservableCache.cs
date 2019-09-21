@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -22,6 +23,8 @@ namespace DynamicData
         private readonly IDisposable _cleanUp;
         private readonly object _locker = new object();
         private readonly object _writeLock = new object();
+
+        public TObject this[TKey key] => _readerWriter[key];
 
         private int _editLevel; // The level of recursion in editing.
 
@@ -225,5 +228,30 @@ namespace DynamicData
         public int Count => _readerWriter.Count;
 
         public void Dispose() => _cleanUp.Dispose();
+
+        public bool ContainsKey(TKey key)
+        {
+            return this._readerWriter.ContainsKey(key);
+        }
+
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            return this._readerWriter.TryGetValue(key, out value);
+        }
+
+        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
+
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            foreach (var item in _readerWriter.KeyValues)
+            {
+                yield return item;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }

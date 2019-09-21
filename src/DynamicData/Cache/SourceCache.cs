@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DynamicData.Kernel;
+
 // ReSharper disable once CheckNamespace
 namespace DynamicData
 {
@@ -18,6 +20,14 @@ namespace DynamicData
     {
         private readonly ObservableCache<TObject, TKey> _innerCache;
         private bool _isDisposed;
+
+        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
+
+        /// <summary> 
+        /// Gets value for given key.  Throws exception if missing. 
+        /// </summary> 
+        public TObject this[TKey key] => _innerCache[key];
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceCache{TObject, TKey}"/> class.
@@ -86,6 +96,36 @@ namespace DynamicData
                 _innerCache.Dispose();
             }
         }
+
+        /// <summary> 
+        /// Returns whether key exists in cache. 
+        /// </summary> 
+        public bool ContainsKey(TKey key)
+        {
+            return _innerCache.ContainsKey(key);
+        }
+
+        /// <summary> 
+        /// Tries and gets value associated with a key. 
+        /// </summary> 
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            return _innerCache.TryGetValue(key, out value);
+        }
+
+        /// <summary> 
+        /// Returns enumerator of all key value pairs in cache 
+        /// </summary> 
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            return _innerCache.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
 
         #endregion
     }

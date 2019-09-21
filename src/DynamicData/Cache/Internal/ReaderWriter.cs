@@ -16,6 +16,15 @@ namespace DynamicData.Cache.Internal
 
         private readonly object _locker = new object();
 
+        public TObject this[TKey key]
+        {
+            get
+            {
+                lock (_locker)
+                    return _data[key];
+            }
+        }
+
         public ReaderWriter(Func<TObject, TKey> keySelector = null) => _keySelector = keySelector;
 
         #region Writers
@@ -186,6 +195,18 @@ namespace DynamicData.Cache.Internal
             {
                 return _data.Lookup(key);
             }
+        }
+
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            lock (_locker)
+                return _data.TryGetValue(key, out value);
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            lock (_locker)
+                return _data.ContainsKey(key);
         }
 
         public int Count

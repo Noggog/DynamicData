@@ -274,7 +274,7 @@ namespace DynamicData
                     return t.WhenPropertyChanged(propertyAccessor, false);
                 }
 
-                return t.WhenPropertyChanged(propertyAccessor,false)
+                return t.WhenPropertyChanged(propertyAccessor, false)
                     .Throttle(propertyChangeThrottle.Value, scheduler ?? Scheduler.Default);
 
             }, changeSetBuffer, scheduler);
@@ -428,7 +428,7 @@ namespace DynamicData
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return source.Select(changes => changes.Transform(t=>(TDestination)t));
+            return source.Select(changes => changes.Transform(t => (TDestination)t));
         }
 
         /// <summary>
@@ -874,7 +874,7 @@ namespace DynamicData
                 throw new ArgumentNullException(nameof(transformFactory));
             }
 
-            return source.Transform<TSource, TDestination>((t, previous, idx) => transformFactory(t,idx),transformOnRefresh);
+            return source.Transform<TSource, TDestination>((t, previous, idx) => transformFactory(t, idx), transformOnRefresh);
         }
 
         /// <summary>
@@ -985,7 +985,7 @@ namespace DynamicData
         /// or
         /// manyselector
         /// </exception>
-        public static IObservable<IChangeSet<TDestination>> TransformMany<TDestination, TSource>( [NotNull] this IObservable<IChangeSet<TSource>> source,
+        public static IObservable<IChangeSet<TDestination>> TransformMany<TDestination, TSource>([NotNull] this IObservable<IChangeSet<TSource>> source,
             [NotNull] Func<TSource, IEnumerable<TDestination>> manyselector,
             IEqualityComparer<TDestination> equalityComparer = null)
         {
@@ -1002,7 +1002,7 @@ namespace DynamicData
             return new TransformMany<TSource, TDestination>(source, manyselector, equalityComparer).Run();
         }
 
-         /// <summary>
+        /// <summary>
         /// Flatten the nested observable collection, and  observe subsequentl observable collection changes
         /// </summary>
         /// <typeparam name="TDestination">The type of the destination.</typeparam>
@@ -1010,11 +1010,11 @@ namespace DynamicData
         /// <param name="source">The source.</param>
         /// <param name="manyselector">The manyselector.</param>
         /// <param name="equalityComparer">Used when an item has been replaced to determine whether child items are the same as previous children</param>
-        public static IObservable<IChangeSet<TDestination>> TransformMany<TDestination, TSource>( this IObservable<IChangeSet<TSource>> source,
+        public static IObservable<IChangeSet<TDestination>> TransformMany<TDestination, TSource>(this IObservable<IChangeSet<TSource>> source,
             Func<TSource, ObservableCollection<TDestination>> manyselector,
             IEqualityComparer<TDestination> equalityComparer = null)
         {
-            return new TransformMany<TSource, TDestination>(source,manyselector, equalityComparer).Run();
+            return new TransformMany<TSource, TDestination>(source, manyselector, equalityComparer).Run();
         }
 
         /// <summary>
@@ -1208,7 +1208,7 @@ namespace DynamicData
                 throw new ArgumentNullException(nameof(propertySelector));
             }
 
-            return     new GroupOnPropertyWithImmutableState<TObject, TGroup>(source, propertySelector, propertyChangedThrottle, scheduler).Run();
+            return new GroupOnPropertyWithImmutableState<TObject, TGroup>(source, propertySelector, propertyChangedThrottle, scheduler).Run();
         }
 
         /// <summary>
@@ -1431,7 +1431,7 @@ namespace DynamicData
             }
 
             var factory = propertyAccessor.GetFactory();
-            return source.MergeMany(t => factory(t, notifyOnInitialValue).Select(pv=>pv.Value));
+            return source.MergeMany(t => factory(t, notifyOnInitialValue).Select(pv => pv.Value));
         }
 
         /// <summary>
@@ -1640,7 +1640,7 @@ namespace DynamicData
                 throw new ArgumentException("Must enter at least 1 reason", nameof(reasons));
             }
 
-            var matches =  new HashSet<ListChangeReason>(reasons);
+            var matches = new HashSet<ListChangeReason>(reasons);
             return source.Select(updates =>
             {
                 var filtered = updates.Where(u => !matches.Contains(u.Reason)).YieldWithoutIndex();
@@ -2127,6 +2127,19 @@ namespace DynamicData
         /// <typeparam name="T"></typeparam>
         /// <param name="sources">The source.</param>
         /// <returns></returns>
+        public static IObservable<IChangeSet<T>> Or<T>(
+            [NotNull] this ISourceList<IObservable<IChangeSet<T>>> sources)
+        {
+            return Or((IObservableList<IObservable<IChangeSet<T>>>)sources);
+        }
+
+        /// <summary>
+        /// Dynamically apply a logical Or operator between the items in the outer observable list.
+        /// Items which are in any of the sources are included in the result
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sources">The source.</param>
+        /// <returns></returns>
         public static IObservable<IChangeSet<T>> Or<T>([NotNull] this IObservableList<IObservableList<T>> sources)
         {
             return sources.Combine(CombineOperator.Or);
@@ -2181,6 +2194,19 @@ namespace DynamicData
             [NotNull] this IObservableList<IObservable<IChangeSet<T>>> sources)
         {
             return sources.Combine(CombineOperator.Xor);
+        }
+
+        /// <summary>
+        /// Dynamically apply a logical Xor operator between the items in the outer observable list.
+        /// Items which are in any of the sources are included in the result
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sources">The source.</param>
+        /// <returns></returns>
+        public static IObservable<IChangeSet<T>> Xor<T>(
+            [NotNull] this ISourceList<IObservable<IChangeSet<T>>> sources)
+        {
+            return Xor((IObservableList<IObservable<IChangeSet<T>>>)sources);
         }
 
         /// <summary>
@@ -2253,6 +2279,19 @@ namespace DynamicData
         /// <typeparam name="T"></typeparam>
         /// <param name="sources">The source.</param>
         /// <returns></returns>
+        public static IObservable<IChangeSet<T>> And<T>(
+            [NotNull] this ISourceList<IObservable<IChangeSet<T>>> sources)
+        {
+            return And((IObservableList<IObservable<IChangeSet<T>>>)sources);
+        }
+
+        /// <summary>
+        /// Dynamically apply a logical And operator between the items in the outer observable list.
+        /// Items which are in any of the sources are included in the result
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sources">The source.</param>
+        /// <returns></returns>
         public static IObservable<IChangeSet<T>> And<T>([NotNull] this IObservableList<IObservableList<T>> sources)
         {
             return sources.Combine(CombineOperator.And);
@@ -2307,6 +2346,18 @@ namespace DynamicData
             [NotNull] this IObservableList<IObservable<IChangeSet<T>>> sources)
         {
             return sources.Combine(CombineOperator.Except);
+        }
+
+        /// <summary>
+        /// Dynamically apply a logical Except operator. Items from the first observable list are included when an equivalent item does not exist in the other sources.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sources">The source.</param>
+        /// <returns></returns>
+        public static IObservable<IChangeSet<T>> Except<T>(
+            [NotNull] this ISourceList<IObservable<IChangeSet<T>>> sources)
+        {
+            return Except((IObservableList<IObservable<IChangeSet<T>>>)sources);
         }
 
         /// <summary>
