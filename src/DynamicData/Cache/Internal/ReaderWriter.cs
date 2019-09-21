@@ -219,7 +219,6 @@ namespace DynamicData.Cache.Internal
                 }
             }
         }
-
         #endregion
     }
 }

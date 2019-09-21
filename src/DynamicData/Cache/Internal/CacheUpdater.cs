@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DynamicData.Kernel;
@@ -389,6 +390,10 @@ namespace DynamicData.Cache.Internal
 
         public int Count => _cache.Count;
 
+        public IEnumerable<TObject> Values => _cache.Items;
+
+        public TObject this[TKey key] => _cache.Lookup(key).Value;
+
         public void Update(IChangeSet<TObject, TKey> changes)
         {
             _cache.Clone(changes);
@@ -397,6 +402,26 @@ namespace DynamicData.Cache.Internal
         public void Clone(IChangeSet<TObject, TKey> changes)
         {
             _cache.Clone(changes);
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            return _cache.ContainsKey(key);
+        }
+
+        public bool TryGetValue(TKey key, out TObject value)
+        {
+            return _cache.TryGetValue(key, out value);
+        }
+
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            return _cache.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _cache.GetEnumerator();
         }
     }
 }

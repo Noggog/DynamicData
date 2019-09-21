@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DynamicData.Kernel;
@@ -33,6 +34,8 @@ namespace DynamicData
 
         /// <inheritdoc />
         public IEnumerable<TKey> Keys => _data?.Keys ?? Enumerable.Empty<TKey>();
+
+        public IEnumerable<TObject> Values => _data.Values;
 
         /// <inheritdoc />
         public TObject this[TKey key] => this._data[key];
@@ -270,5 +273,14 @@ namespace DynamicData
             return copy;
         }
 
+        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }

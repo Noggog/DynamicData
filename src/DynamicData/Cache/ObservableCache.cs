@@ -241,6 +241,17 @@ namespace DynamicData
 
         IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
 
+        public TObject TryCreateValue(TKey key, Func<TKey, TObject> creator)
+        {
+            lock (_writeLock)
+            {
+                if (this._readerWriter.TryGetValue(key, out var val)) return val;
+                val = creator(key);
+                UpdateFromSource((s) => s.AddOrUpdate(val));
+                return val;
+            }
+        }
+
         public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
         {
             foreach (var item in _readerWriter.KeyValues)

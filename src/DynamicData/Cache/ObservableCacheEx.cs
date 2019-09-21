@@ -5888,6 +5888,23 @@ namespace DynamicData
             return source.Subscribe(changes => detination.Edit(updater => updater.Clone(changes)));
         }
 
+        public static TObject TryCreateValue<TObject, TKey>(this ISourceCache<TObject, TKey> source, TKey key, Func<TKey, TObject> createFunc)
+        {
+            TObject ret = default;
+            source.Edit((dict) =>
+            {
+                if (dict.ContainsKey(key))
+                {
+                    ret = dict[key];
+                }
+                else
+                {
+                    ret = createFunc(key);
+                    dict.AddOrUpdate(ret);
+                }
+            });
+            return ret;
+        }
         #endregion
 
         #region Switch
