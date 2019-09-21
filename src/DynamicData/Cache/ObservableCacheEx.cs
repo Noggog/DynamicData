@@ -5480,6 +5480,45 @@ namespace DynamicData
         }
 
         /// <summary>
+        /// Adds or updates the cache with the specified item.
+        /// </summary>
+        /// <typeparam name="TObject">The type of the object.</typeparam>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="item">The item.</param>
+        /// <param name="equalityComparer">The equality comparer used to determine whether a new item is the same as an existing cached item</param>
+        /// <exception cref="System.ArgumentNullException">source</exception>
+        public static void Set<TObject, TKey>(this ISourceCache<TObject, TKey> source, TObject item, IEqualityComparer<TObject> equalityComparer = null)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            source.Edit(updater => updater.AddOrUpdate(item, equalityComparer ?? EqualityComparer<TObject>.Default));
+        }
+
+        /// <summary>
+        /// <summary>
+        /// Adds or updates the cache with the specified items.
+        /// </summary>
+        /// </summary>
+        /// <typeparam name="TObject">The type of the object.</typeparam>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="items">The items.</param>
+        /// <exception cref="System.ArgumentNullException">source</exception>
+        public static void Set<TObject, TKey>(this ISourceCache<TObject, TKey> source, IEnumerable<TObject> items)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            source.Edit(updater => updater.AddOrUpdate(items));
+        }
+
+        /// <summary>
         /// Removes the specified item from the cache. 
         /// 
         /// If the item is not contained in the cache then the operation does nothing.
