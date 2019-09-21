@@ -171,7 +171,7 @@ namespace DynamicData.Cache.Internal
         /// </summary>
         public int Count => _innerCache.Count;
 
-        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
+        IEnumerable<TObject> IReadOnlyCache<TObject, TKey>.Values => this.Items;
 
         /// <inheritdoc />
         public TObject this[TKey key] => this._innerCache[key];
@@ -222,6 +222,18 @@ namespace DynamicData.Cache.Internal
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator()
+        {
+            foreach (var item in _innerCache)
+            {
+                yield return new KeyValue<TObject, TKey>()
+                {
+                    Key = item.Key,
+                    Value = item.Value,
+                };
+            }
         }
     }
 }
