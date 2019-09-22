@@ -15,7 +15,7 @@ namespace DynamicData
 
         public IKeyValueCollection<TObject, TKey> SortedItems { get; }
 
-        public SortedChangeSet(IKeyValueCollection<TObject, TKey> sortedItems, IEnumerable<Change<TObject, TKey>> updates)
+        public SortedChangeSet(IKeyValueCollection<TObject, TKey> sortedItems, IEnumerable<IChange<TObject, TKey>> updates)
             : base(updates)
         {
             SortedItems = sortedItems;

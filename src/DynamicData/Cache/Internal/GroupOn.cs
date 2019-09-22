@@ -78,13 +78,13 @@ namespace DynamicData.Cache.Internal
             public IGroupChangeSet<TObject, TKey, TGroupKey> Regroup()
             {
                 //re-evaluate all items in the group
-                var items = _itemCache.Select(item => new Change<TObject, TKey>(ChangeReason.Refresh, item.Key, item.Value.Item));
+                var items = _itemCache.Select<KeyValuePair<TKey, ChangeWithGroup>, IChange<TObject, TKey>>(item => new Change<TObject, TKey>(ChangeReason.Refresh, item.Key, item.Value.Item));
                 return HandleUpdates(new ChangeSet<TObject, TKey>(items), true);
             }
 
-            private GroupChangeSet<TObject, TKey, TGroupKey> HandleUpdates(IEnumerable<Change<TObject, TKey>> changes, bool isRegrouping = false)
+            private GroupChangeSet<TObject, TKey, TGroupKey> HandleUpdates(IEnumerable<IChange<TObject, TKey>> changes, bool isRegrouping = false)
             {
-                var result = new List<Change<IGroup<TObject, TKey, TGroupKey>, TGroupKey>>();
+                var result = new List<IChange<IGroup<TObject, TKey, TGroupKey>, TGroupKey>>();
 
                 //Group all items
                 var grouped = changes
@@ -250,7 +250,7 @@ namespace DynamicData.Cache.Internal
 
             private readonly struct ChangeWithGroup : IEquatable<ChangeWithGroup>
             {
-                public ChangeWithGroup(Change<TObject, TKey> change, Func<TObject, TGroupKey> keySelector)
+                public ChangeWithGroup(IChange<TObject, TKey> change, Func<TObject, TGroupKey> keySelector)
                 {
                     GroupKey = keySelector(change.Current);
                     Item = change.Current;

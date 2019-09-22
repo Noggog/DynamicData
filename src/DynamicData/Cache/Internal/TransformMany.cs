@@ -131,7 +131,7 @@ namespace DynamicData.Cache.Internal
             });
         }
 
-        private sealed class DestinationEnumerator : IEnumerable<Change<TDestination, TDestinationKey>>
+        private sealed class DestinationEnumerator : IEnumerable<IChange<TDestination, TDestinationKey>>
         {
             private readonly IChangeSet<ManyContainer, TSourceKey> _changes;
 
@@ -140,7 +140,7 @@ namespace DynamicData.Cache.Internal
                 _changes = changes;
             }
 
-            public IEnumerator<Change<TDestination, TDestinationKey>> GetEnumerator()
+            public IEnumerator<IChange<TDestination, TDestinationKey>> GetEnumerator()
             {
                 foreach (var change in _changes)
                 {
@@ -184,7 +184,7 @@ namespace DynamicData.Cache.Internal
                                     //Do not update is items are the same reference
                                     if (!ReferenceEquals(current.Item, previous.Item))
                                     {
-                                        yield return new Change<TDestination, TDestinationKey>(ChangeReason.Update, destination.Key, current.Item, previous.Item);
+                                        yield return new Change<TDestination, TDestinationKey>(ChangeReason.Update, destination.Key, current.Item, new Optional<TDestination>(previous.Item));
                                     }
                                 }
                             }

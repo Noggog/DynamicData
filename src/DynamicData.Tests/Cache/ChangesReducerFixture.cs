@@ -16,9 +16,9 @@ namespace DynamicData.Tests.Cache
         {
             new Change<Person, string>(ChangeReason.Add, _testEntity.Key, _testEntity, _testIndex),
             new Change<Person, string>(ChangeReason.Remove, _testEntity.Key, _testEntity, _testIndex),
-            new Change<Person, string>(ChangeReason.Moved, _testEntity.Key, _testEntity, _testEntity, _testIndex,
+            new Change<Person, string>(ChangeReason.Moved, _testEntity.Key, _testEntity, new Optional<Person>(_testEntity), _testIndex,
                 _testIndex + 1),
-            new Change<Person, string>(ChangeReason.Update, _testEntity.Key, _testEntity, _testEntity, _testIndex),
+            new Change<Person, string>(ChangeReason.Update, _testEntity.Key, _testEntity, new Optional<Person>(_testEntity), _testIndex),
             new Change<Person, string>(ChangeReason.Refresh, _testEntity.Key, _testEntity, _testIndex)
         };
 
@@ -63,7 +63,7 @@ namespace DynamicData.Tests.Cache
             var add = _changes.Single(c => c.Reason == ChangeReason.Add);
 
             var result = ChangesReducer.Reduce(remove, add);
-            var expected = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, add.Current, remove.Current, add.CurrentIndex, remove.CurrentIndex);
+            var expected = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, add.Current, new Optional<Person>(remove.Current), add.CurrentIndex, remove.CurrentIndex);
 
             result.Value.Should().Be(expected);
         }
@@ -75,7 +75,7 @@ namespace DynamicData.Tests.Cache
             var newIndex = _testIndex + 1;
 
             var add = new Change<Person, string>(ChangeReason.Add, _testEntity.Key, _testEntity, _testIndex);
-            var update = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, updatedEntity, add.Current, newIndex, _testIndex);
+            var update = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, updatedEntity, new Optional<Person>(add.Current), newIndex, _testIndex);
 
             var result = ChangesReducer.Reduce(add, update);
             var expected = new Change<Person, string>(ChangeReason.Add, _testEntity.Key, updatedEntity, newIndex);
@@ -92,11 +92,11 @@ namespace DynamicData.Tests.Cache
             var newIndexOne = _testIndex + 1;
             var newIndexTwo = _testIndex + 2;
 
-            var firstUpdate = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, updatedEntityOne, _testEntity, newIndexOne, _testIndex);
-            var secondUpdate = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, updatedEntityTwo, updatedEntityOne, newIndexTwo, newIndexOne);
+            var firstUpdate = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, updatedEntityOne, new Optional<Person>(_testEntity), newIndexOne, _testIndex);
+            var secondUpdate = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, updatedEntityTwo, new Optional<Person>(updatedEntityOne), newIndexTwo, newIndexOne);
 
             var result = ChangesReducer.Reduce(firstUpdate, secondUpdate);
-            var expected = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, updatedEntityTwo, _testEntity, newIndexTwo, _testIndex) ;
+            var expected = new Change<Person, string>(ChangeReason.Update, _testEntity.Key, updatedEntityTwo, new Optional<Person>(_testEntity), newIndexTwo, _testIndex) ;
 
             result.Value.Should().Be(expected);
         }

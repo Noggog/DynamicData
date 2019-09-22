@@ -28,11 +28,11 @@ namespace DynamicData.Cache.Internal
 
         public Func<TObject, bool> Filter { get; }
 
-        public IChangeSet<TObject, TKey> Refresh(IEnumerable<KeyValuePair<TKey, TObject>> items)
+        public IChangeSet<TObject, TKey> Refresh(IEnumerable<IKeyValue<TObject, TKey>> items)
         {
             //this is an internal method only so we can be sure there are no duplicate keys in the result
             //(therefore safe to parallelise)
-            Optional<Change<TObject, TKey>> Factory(KeyValuePair<TKey, TObject> kv)
+            IOptional<IChange<TObject, TKey>> Factory(IKeyValue<TObject, TKey> kv)
             {
                 var exisiting = _cache.Lookup(kv.Key);
                 var matches = Filter(kv.Value);
@@ -41,18 +41,18 @@ namespace DynamicData.Cache.Internal
                 {
                     if (!exisiting.HasValue)
                     {
-                        return new Change<TObject, TKey>(ChangeReason.Add, kv.Key, kv.Value);
+                        return new Optional<IChange<TObject, TKey>>(new Change<TObject, TKey>(ChangeReason.Add, kv.Key, kv.Value));
                     }
                 }
                 else
                 {
                     if (exisiting.HasValue)
                     {
-                        return new Change<TObject, TKey>(ChangeReason.Remove, kv.Key, kv.Value, exisiting);
+                        return new Optional<IChange<TObject, TKey>>(new Change<TObject, TKey>(ChangeReason.Remove, kv.Key, kv.Value, exisiting));
                     }
                 }
 
-                return Optional.None<Change<TObject, TKey>>();
+                return Optional.None<IChange<TObject, TKey>>();
             }
 
             var result = Refresh(items, Factory);
@@ -61,7 +61,7 @@ namespace DynamicData.Cache.Internal
             return _cache.CaptureChanges();
         }
 
-        protected abstract IEnumerable<Change<TObject, TKey>> Refresh(IEnumerable<KeyValuePair<TKey, TObject>> items, Func<KeyValuePair<TKey, TObject>, Optional<Change<TObject, TKey>>> factory);
+        protected abstract IEnumerable<IChange<TObject, TKey>> Refresh(IEnumerable<IKeyValue<TObject, TKey>> items, Func<IKeyValue<TObject, TKey>, IOptional<IChange<TObject, TKey>>> factory);
 
         public IChangeSet<TObject, TKey> Update(IChangeSet<TObject, TKey> updates)
         {
@@ -144,13 +144,13 @@ namespace DynamicData.Cache.Internal
             /// <summary>
             /// Initializes a new instance of the <see cref="T:System.Object"/> class.
             /// </summary>
-            public UpdateWithFilter(bool isMatch, Change<TObject, TKey> change)
+            public UpdateWithFilter(bool isMatch, IChange<TObject, TKey> change)
             {
                 IsMatch = isMatch;
                 Change = change;
             }
 
-            public Change<TObject, TKey> Change { get; }
+            public IChange<TObject, TKey> Change { get; }
             public bool IsMatch { get; }
         }
     }

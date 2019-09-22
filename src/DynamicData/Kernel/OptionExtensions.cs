@@ -34,7 +34,7 @@ namespace DynamicData.Kernel
         /// <param name="valueSelector">The value selector.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">valueSelector</exception>
-        public static T ValueOr<T>(this Optional<T> source, Func<T> valueSelector)
+        public static T ValueOr<T>(this IOptional<T> source, Func<T> valueSelector)
         {
             if (valueSelector == null)
             {
@@ -50,7 +50,7 @@ namespace DynamicData.Kernel
         /// <typeparam name="T"></typeparam>
         /// <param name="source">The source.</param>
         /// <returns></returns>
-        public static T ValueOrDefault<T>(this Optional<T> source)
+        public static T ValueOrDefault<T>(this IOptional<T> source)
         {
             return source.HasValue ? source.Value : default(T);
         }
@@ -63,7 +63,7 @@ namespace DynamicData.Kernel
         /// <param name="exceptionGenerator">The exception generator.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">exceptionGenerator</exception>
-        public static T ValueOrThrow<T>(this Optional<T> source, Func<Exception> exceptionGenerator)
+        public static T ValueOrThrow<T>(this IOptional<T> source, Func<Exception> exceptionGenerator)
         {
             if (exceptionGenerator == null)
             {
@@ -92,7 +92,7 @@ namespace DynamicData.Kernel
         /// or
         /// fallbackConverter
         /// </exception>
-        public static TDestination ConvertOr<TSource, TDestination>(this Optional<TSource> source, Func<TSource, TDestination> converter, Func<TDestination> fallbackConverter)
+        public static TDestination ConvertOr<TSource, TDestination>(this IOptional<TSource> source, Func<TSource, TDestination> converter, Func<TDestination> fallbackConverter)
         {
             if (converter == null)
             {
@@ -116,7 +116,7 @@ namespace DynamicData.Kernel
         /// <param name="converter">The converter.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">converter</exception>
-        public static Optional<TDestination> Convert<TSource, TDestination>(this Optional<TSource> source, Func<TSource, TDestination> converter)
+        public static IOptional<TDestination> Convert<TSource, TDestination>(this IOptional<TSource> source, Func<TSource, TDestination> converter)
         {
             if (converter == null)
             {
@@ -132,7 +132,7 @@ namespace DynamicData.Kernel
         /// </summary>
         /// <param name="source">The source.</param>
         /// <returns></returns>
-        public static IEnumerable<T> SelectValues<T>(this IEnumerable<Optional<T>> source)
+        public static IEnumerable<T> SelectValues<T>(this IEnumerable<IOptional<T>> source)
         {
             return source.Where(t => t.HasValue).Select(t => t.Value);
         }
@@ -147,7 +147,7 @@ namespace DynamicData.Kernel
         /// <param name="source">The source.</param>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public static Optional<TValue> Lookup<TValue, TKey>(this IDictionary<TKey, TValue> source, TKey key)
+        public static IOptional<TValue> Lookup<TValue, TKey>(this IDictionary<TKey, TValue> source, TKey key)
         {
             if (source == null)
             {
@@ -186,7 +186,7 @@ namespace DynamicData.Kernel
         /// <param name="source">The source.</param>
         /// <param name="selector">The selector.</param>
         /// <returns></returns>
-        public static Optional<T> FirstOrOptional<T>(this IEnumerable<T> source, Func<T, bool> selector)
+        public static IOptional<T> FirstOrOptional<T>(this IEnumerable<T> source, Func<T, bool> selector)
         {
             if (source == null)
             {
@@ -204,7 +204,7 @@ namespace DynamicData.Kernel
         /// <param name="source">The source.</param>
         /// <param name="action">The action.</param>
         /// <returns></returns>
-        public static OptionElse IfHasValue<T>(this Optional<T> source, Action<T> action)
+        public static OptionElse IfHasValue<T>(this IOptional<T> source, Action<T> action)
         {
             if (!source.HasValue)
             {

@@ -44,7 +44,7 @@ namespace DynamicData.Tests.Cache
             _result.Data.Lookup("Device2").HasValue.Should().BeTrue();
             _result.Data.Lookup("Device3").HasValue.Should().BeTrue();
 
-            _result.Data.Items.All(dwm => dwm.MetaData == Optional<DeviceMetaData>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace DynamicData.Tests.Cache
 
             3.Should().Be(_result.Data.Count);
 
-            _result.Data.Items.All(dwm => dwm.MetaData != Optional<DeviceMetaData>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace DynamicData.Tests.Cache
             _right.Remove("Device3");
 
             3.Should().Be(_result.Data.Count);
-            2.Should().Be(_result.Data.Items.Count(dwm => dwm.MetaData != Optional<DeviceMetaData>.None));
+            2.Should().Be(_result.Data.Items.Count(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)));
 
             _left.Remove("Device1");
             _result.Data.Lookup("Device1").HasValue.Should().BeFalse();
@@ -127,7 +127,7 @@ namespace DynamicData.Tests.Cache
 
             3.Should().Be(_result.Data.Count);
 
-            _result.Data.Items.All(dwm => dwm.MetaData != Optional<DeviceMetaData>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace DynamicData.Tests.Cache
 
             3.Should().Be(_result.Data.Count);
 
-            _result.Data.Items.All(dwm => dwm.MetaData != Optional<DeviceMetaData>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
         }
 
         public class Device : IEquatable<Device>
@@ -299,9 +299,9 @@ namespace DynamicData.Tests.Cache
         public class DeviceWithMetadata : IEquatable<DeviceWithMetadata>
         {
             public Device Device { get; }
-            public Optional<DeviceMetaData> MetaData { get; }
+            public IOptional<DeviceMetaData> MetaData { get; }
 
-            public DeviceWithMetadata(Device device, Optional<DeviceMetaData> metaData)
+            public DeviceWithMetadata(Device device, IOptional<DeviceMetaData> metaData)
             {
                 Device = device;
                 MetaData = metaData;

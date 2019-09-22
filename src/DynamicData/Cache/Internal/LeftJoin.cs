@@ -15,12 +15,12 @@ namespace DynamicData.Cache.Internal
         private readonly IObservable<IChangeSet<TRight, TRightKey>> _right;
 
         private readonly Func<TRight, TLeftKey> _rightKeySelector;
-        private readonly Func<TLeftKey, TLeft, Optional<TRight>, TDestination> _resultSelector;
+        private readonly Func<TLeftKey, TLeft, IOptional<TRight>, TDestination> _resultSelector;
 
         public LeftJoin(IObservable<IChangeSet<TLeft, TLeftKey>> left,
             IObservable<IChangeSet<TRight, TRightKey>> right,
             Func<TRight, TLeftKey> rightKeySelector,
-            Func<TLeftKey, TLeft, Optional<TRight>, TDestination> resultSelector)
+            Func<TLeftKey, TLeft, IOptional<TRight>, TDestination> resultSelector)
         {
             _left = left ?? throw new ArgumentNullException(nameof(left));
             _right = right ?? throw new ArgumentNullException(nameof(right));
@@ -88,7 +88,7 @@ namespace DynamicData.Cache.Internal
                                         if (left.HasValue)
                                         {
                                             //Update with left and right value
-                                            innerCache.AddOrUpdate(_resultSelector(change.Key, left.Value, right),
+                                            innerCache.AddOrUpdate(_resultSelector(change.Key, left.Value, new Optional<TRight>(right)),
                                                 change.Key);
                                         }
                                         else

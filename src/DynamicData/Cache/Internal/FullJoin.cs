@@ -14,12 +14,12 @@ namespace DynamicData.Cache.Internal
         private readonly IObservable<IChangeSet<TLeft, TLeftKey>> _left;
         private readonly IObservable<IChangeSet<TRight, TRightKey>> _right;
         private readonly Func<TRight, TLeftKey> _rightKeySelector;
-        private readonly Func<TLeftKey, Optional<TLeft>, Optional<TRight>, TDestination> _resultSelector;
+        private readonly Func<TLeftKey, IOptional<TLeft>, IOptional<TRight>, TDestination> _resultSelector;
 
         public FullJoin(IObservable<IChangeSet<TLeft, TLeftKey>> left,
             IObservable<IChangeSet<TRight, TRightKey>> right,
             Func<TRight, TLeftKey> rightKeySelector,
-            Func<TLeftKey, Optional<TLeft>, Optional<TRight>, TDestination> resultSelector)
+            Func<TLeftKey, IOptional<TLeft>, IOptional<TRight>, TDestination> resultSelector)
         {
             _left = left ?? throw new ArgumentNullException(nameof(left));
             _right = right ?? throw new ArgumentNullException(nameof(right));
@@ -54,7 +54,7 @@ namespace DynamicData.Cache.Internal
                                 {
                                     case ChangeReason.Add:
                                     case ChangeReason.Update:
-                                        innerCache.AddOrUpdate(_resultSelector(change.Key, left, right), change.Key);
+                                        innerCache.AddOrUpdate(_resultSelector(change.Key, new Optional<TLeft>(left), right), change.Key);
                                         break;
                                     case ChangeReason.Remove:
 
@@ -94,7 +94,7 @@ namespace DynamicData.Cache.Internal
                                     case ChangeReason.Add:
                                     case ChangeReason.Update:
                                         {
-                                            innerCache.AddOrUpdate(_resultSelector(change.Key, left, right), change.Key);
+                                            innerCache.AddOrUpdate(_resultSelector(change.Key, left, new Optional<TRight>(right)), change.Key);
                                         }
 
                                         break;

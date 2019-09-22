@@ -50,7 +50,7 @@ namespace DynamicData.Tests.Cache
             _result.Data.Lookup("Device2").HasValue.Should().BeTrue();
             _result.Data.Lookup("Device3").HasValue.Should().BeTrue();
 
-            _result.Data.Items.All(dwm => dwm.Device == Optional<Device>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => dwm.Device.Equals(Optional<Device>.None)).Should().BeTrue();
         }
 
         [Fact]
@@ -299,10 +299,10 @@ namespace DynamicData.Tests.Cache
         public class DeviceWithMetadata : IEquatable<DeviceWithMetadata>
         {
             public string Key { get; }
-            public Optional<Device> Device { get; }
+            public IOptional<Device> Device { get; }
             public DeviceMetaData MetaData { get; }
 
-            public DeviceWithMetadata(string key, Optional<Device> device, DeviceMetaData metaData)
+            public DeviceWithMetadata(string key, IOptional<Device> device, DeviceMetaData metaData)
             {
                 Key = key;
                 Device = device;

@@ -13,12 +13,12 @@ namespace DynamicData.Cache.Internal
         private readonly IObservable<IChangeSet<TLeft, TLeftKey>> _left;
         private readonly IObservable<IChangeSet<TRight, TRightKey>> _right;
         private readonly Func<TRight, TLeftKey> _rightKeySelector;
-        private readonly Func<TLeftKey, Optional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> _resultSelector;
+        private readonly Func<TLeftKey, IOptional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> _resultSelector;
 
         public RightJoinMany([NotNull] IObservable<IChangeSet<TLeft, TLeftKey>> left,
             [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
             [NotNull] Func<TRight, TLeftKey> rightKeySelector,
-            [NotNull] Func<TLeftKey, Optional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
+            [NotNull] Func<TLeftKey, IOptional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
         {
             _left = left ?? throw new ArgumentNullException(nameof(left));
             _right = right ?? throw new ArgumentNullException(nameof(right));

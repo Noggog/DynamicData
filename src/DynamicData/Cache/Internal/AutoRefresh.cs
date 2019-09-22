@@ -38,7 +38,7 @@ namespace DynamicData.Cache.Internal
                 var changes = shared.MergeMany((t, k) =>
                 {
                     return _reevaluator(t, k)
-                    .Select(_ => new Change<TObject, TKey>(ChangeReason.Refresh, k, t));
+                        .Select<TAny, IChange<TObject, TKey>>(_ => new Change<TObject, TKey>(ChangeReason.Refresh, k, t));
                 });
 
                 //create a changeset, either buffered or one item at the time

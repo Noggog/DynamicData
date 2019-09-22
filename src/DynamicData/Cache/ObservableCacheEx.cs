@@ -131,7 +131,7 @@ namespace DynamicData
         /// <param name="source">The source.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">source</exception>
-        public static IObservable<Change<TObject, TKey>> Flatten<TObject, TKey>(
+        public static IObservable<IChange<TObject, TKey>> Flatten<TObject, TKey>(
             this IObservable<IChangeSet<TObject, TKey>> source)
         {
             if (source == null)
@@ -154,7 +154,7 @@ namespace DynamicData
         /// </exception>
         public static IObservable<IChangeSet<TObject, TKey>> ForEachChange<TObject, TKey>(
             [NotNull] this IObservable<IChangeSet<TObject, TKey>> source,
-            [NotNull] Action<Change<TObject, TKey>> action)
+            [NotNull] Action<IChange<TObject, TKey>> action)
         {
             if (source == null)
             {
@@ -901,7 +901,7 @@ namespace DynamicData
 
             return source.Select(updates =>
             {
-                var changed = updates.Select(u => new Change<TObject, TDestinationKey>(u.Reason, keySelector(u.Current), u.Current, u.Previous));
+                var changed = updates.Select<IChange<TObject, TSourceKey>, IChange<TObject, TDestinationKey>>(u => new Change<TObject, TDestinationKey>(u.Reason, keySelector(u.Current), u.Current, u.Previous));
                 return new ChangeSet<TObject, TDestinationKey>(changed);
             });
         }
@@ -930,7 +930,7 @@ namespace DynamicData
 
             return source.Select(updates =>
             {
-                var changed = updates.Select(u => new Change<TObject, TDestinationKey>(u.Reason, keySelector(u.Key, u.Current), u.Current, u.Previous));
+                var changed = updates.Select<IChange<TObject, TSourceKey>, IChange<TObject, TDestinationKey>>(u => new Change<TObject, TDestinationKey>(u.Reason, keySelector(u.Key, u.Current), u.Current, u.Previous));
                 return new ChangeSet<TObject, TDestinationKey>(changed);
             });
         }
@@ -962,7 +962,7 @@ namespace DynamicData
 
             return source.Select(changes =>
             {
-                var transformed = changes.Select(change => new Change<TDestination, TKey>(change.Reason,
+                var transformed = changes.Select<IChange<TObject, TKey>, IChange<TDestination, TKey>>(change => new Change<TDestination, TKey>(change.Reason,
                                                                                           change.Key,
                                                                                           conversionFactory(change.Current),
                                                                                           change.Previous.Convert(conversionFactory),
@@ -1540,7 +1540,7 @@ namespace DynamicData
         /// <param name="source">The source.</param>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public static IObservable<Change<TObject, TKey>> Watch<TObject, TKey>(this IObservable<IChangeSet<TObject, TKey>> source, TKey key)
+        public static IObservable<IChange<TObject, TKey>> Watch<TObject, TKey>(this IObservable<IChangeSet<TObject, TKey>> source, TKey key)
         {
             if (source == null)
             {
@@ -2107,7 +2107,7 @@ namespace DynamicData
                 throw new ArgumentNullException(nameof(source));
             }
 
-            IEnumerable<Change<TObject, TKey>> ReplaceMoves(IChangeSet<TObject, TKey> items)
+            IEnumerable<IChange<TObject, TKey>> ReplaceMoves(IChangeSet<TObject, TKey> items)
 		    {
 			    foreach (var change in items)
 			    {
@@ -2907,7 +2907,7 @@ namespace DynamicData
         /// or
         /// transformFactory</exception>
         public static IObservable<IChangeSet<TDestination, TKey>> Transform<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source,
-            Func<TSource, Optional<TSource>, TKey, TDestination> transformFactory,
+            Func<TSource, IOptional<TSource>, TKey, TDestination> transformFactory,
             bool transformOnRefresh)
         {
             if (source == null)
@@ -2998,7 +2998,7 @@ namespace DynamicData
         /// <exception cref="System.ArgumentNullException">source
         /// or
         /// transformFactory</exception>
-        public static IObservable<IChangeSet<TDestination, TKey>> Transform<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source, Func<TSource, Optional<TSource>, TKey, TDestination> transformFactory, IObservable<Func<TSource, TKey, bool>> forceTransform = null)
+        public static IObservable<IChangeSet<TDestination, TKey>> Transform<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source, Func<TSource, IOptional<TSource>, TKey, TDestination> transformFactory, IObservable<Func<TSource, TKey, bool>> forceTransform = null)
         {
             if (source == null)
             {
@@ -3088,7 +3088,7 @@ namespace DynamicData
         /// <exception cref="System.ArgumentNullException">source
         /// or
         /// transformFactory</exception>
-        public static IObservable<IChangeSet<TDestination, TKey>> Transform<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source, Func<TSource, Optional<TSource>, TKey, TDestination> transformFactory, IObservable<Unit> forceTransform)
+        public static IObservable<IChangeSet<TDestination, TKey>> Transform<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source, Func<TSource, IOptional<TSource>, TKey, TDestination> transformFactory, IObservable<Unit> forceTransform)
         {
             if (source == null)
             {
@@ -3215,7 +3215,7 @@ namespace DynamicData
         /// or
         /// transformFactory</exception>
         public static IObservable<IChangeSet<TDestination, TKey>> TransformAsync<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source,
-                                                                                                         Func<TSource, Optional<TSource>, TKey, Task<TDestination>> transformFactory,
+                                                                                                         Func<TSource, IOptional<TSource>, TKey, Task<TDestination>> transformFactory,
                                                                                                          int maximumConcurrency = 1,
                                                                                                          IObservable<Func<TSource, TKey, bool>> forceTransform = null)
         {
@@ -3385,7 +3385,7 @@ namespace DynamicData
         /// or
         /// transformFactory</exception>
         public static IObservable<IChangeSet<TDestination, TKey>> TransformSafe<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source,
-            Func<TSource, Optional<TSource>, TKey, TDestination> transformFactory,
+            Func<TSource, IOptional<TSource>, TKey, TDestination> transformFactory,
             Action<Error<TSource, TKey>> errorHandler,
             IObservable<Func<TSource, TKey, bool>> forceTransform = null)
         {
@@ -3490,7 +3490,7 @@ namespace DynamicData
         /// or
         /// transformFactory</exception>
         public static IObservable<IChangeSet<TDestination, TKey>> TransformSafe<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source,
-            Func<TSource, Optional<TSource>, TKey, TDestination> transformFactory,
+            Func<TSource, IOptional<TSource>, TKey, TDestination> transformFactory,
             Action<Error<TSource, TKey>> errorHandler,
             IObservable<Unit> forceTransform)
         {
@@ -3616,7 +3616,7 @@ namespace DynamicData
         /// or
         /// transformFactory</exception>
         public static IObservable<IChangeSet<TDestination, TKey>> TransformSafeAsync<TDestination, TSource, TKey>(this IObservable<IChangeSet<TSource, TKey>> source,
-                                                                                                         Func<TSource, Optional<TSource>, TKey, Task<TDestination>> transformFactory,
+                                                                                                         Func<TSource, IOptional<TSource>, TKey, Task<TDestination>> transformFactory,
                                                                                                          Action<Error<TSource, TKey>> errorHandler,
                                                                                                          int maximumConcurrency = 1,
                                                                                                          IObservable<Func<TSource, TKey, bool>> forceTransform = null)
@@ -4511,7 +4511,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> FullJoin<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull]  Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull]  Func<Optional<TLeft>, Optional<TRight>, TDestination> resultSelector)
+               [NotNull]  Func<IOptional<TLeft>, IOptional<TRight>, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4554,7 +4554,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> FullJoin<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull]  Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull]  Func<TLeftKey, Optional<TLeft>, Optional<TRight>, TDestination> resultSelector)
+               [NotNull]  Func<TLeftKey, IOptional<TLeft>, IOptional<TRight>, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4597,7 +4597,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> FullJoinMany<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull] Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull] Func<Optional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
+               [NotNull] Func<IOptional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4640,7 +4640,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> FullJoinMany<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull] Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull] Func<TLeftKey, Optional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
+               [NotNull] Func<TLeftKey, IOptional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4682,7 +4682,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> LeftJoin<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull] Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull] Func<TLeft, Optional<TRight>, TDestination> resultSelector)
+               [NotNull] Func<TLeft, IOptional<TRight>, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4724,7 +4724,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> LeftJoin<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull]  Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull]  Func<TLeftKey, TLeft, Optional<TRight>, TDestination> resultSelector)
+               [NotNull]  Func<TLeftKey, TLeft, IOptional<TRight>, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4852,7 +4852,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> RightJoin<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull]  Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull]  Func<Optional<TLeft>, TRight, TDestination> resultSelector)
+               [NotNull]  Func<IOptional<TLeft>, TRight, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4894,7 +4894,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> RightJoin<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull]  Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull]  Func<TLeftKey, Optional<TLeft>, TRight, TDestination> resultSelector)
+               [NotNull]  Func<TLeftKey, IOptional<TLeft>, TRight, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4938,7 +4938,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> RightJoinMany<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull] Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull] Func<Optional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
+               [NotNull] Func<IOptional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
         {
             if (left == null)
             {
@@ -4981,7 +4981,7 @@ namespace DynamicData
         public static IObservable<IChangeSet<TDestination, TLeftKey>> RightJoinMany<TLeft, TLeftKey, TRight, TRightKey, TDestination>(this IObservable<IChangeSet<TLeft, TLeftKey>> left,
                [NotNull] IObservable<IChangeSet<TRight, TRightKey>> right,
                [NotNull] Func<TRight, TLeftKey> rightKeySelector,
-               [NotNull] Func<TLeftKey, Optional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
+               [NotNull] Func<TLeftKey, IOptional<TLeft>, IGrouping<TRight, TRightKey, TLeftKey>, TDestination> resultSelector)
         {
             if (left == null)
             {

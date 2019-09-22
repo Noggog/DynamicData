@@ -34,7 +34,7 @@ namespace DynamicData.Cache.Internal
             }
 
             var notifications = _cache.CaptureChanges();
-            var changed = notifications.Select(update => new Change<TObject, TKey>
+            var changed = notifications.Select<IChange<ExpirableItem<TObject, TKey>, TKey>, IChange<TObject, TKey>>(update => new Change<TObject, TKey>
                                                    (
                                                    update.Reason,
                                                    update.Key,

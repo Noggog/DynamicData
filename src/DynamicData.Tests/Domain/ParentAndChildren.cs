@@ -17,7 +17,7 @@ namespace DynamicData.Tests.Domain
             Children = children;
         }
 
-        public ParentAndChildren(string parentId, Optional<Person> parent, Person[] children)
+        public ParentAndChildren(string parentId, IOptional<Person> parent, Person[] children)
         {
             Parent = parent.ValueOr(()=>null);
             ParentId = parentId;

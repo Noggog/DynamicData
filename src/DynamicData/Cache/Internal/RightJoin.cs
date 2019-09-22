@@ -14,12 +14,12 @@ namespace DynamicData.Cache.Internal
         private readonly IObservable<IChangeSet<TLeft, TLeftKey>> _left;
         private readonly IObservable<IChangeSet<TRight, TRightKey>> _right;
         private readonly Func<TRight, TLeftKey> _rightKeySelector;
-        private readonly Func<TLeftKey, Optional<TLeft>, TRight, TDestination> _resultSelector;
+        private readonly Func<TLeftKey, IOptional<TLeft>, TRight, TDestination> _resultSelector;
 
         public RightJoin(IObservable<IChangeSet<TLeft, TLeftKey>> left,
             IObservable<IChangeSet<TRight, TRightKey>> right,
             Func<TRight, TLeftKey> rightKeySelector,
-            Func<TLeftKey, Optional<TLeft>, TRight, TDestination> resultSelector)
+            Func<TLeftKey, IOptional<TLeft>, TRight, TDestination> resultSelector)
         {
             _left = left ?? throw new ArgumentNullException(nameof(left));
             _right = right ?? throw new ArgumentNullException(nameof(right));
@@ -77,7 +77,7 @@ namespace DynamicData.Cache.Internal
                             foreach (var change in changes.ToConcreteType())
                             {
                                 TLeft left = change.Current;
-                                Optional<TRight> right = rightCache.Lookup(change.Key);
+                                IOptional<TRight> right = rightCache.Lookup(change.Key);
 
                                 switch (change.Reason)
                                 {
@@ -87,7 +87,7 @@ namespace DynamicData.Cache.Internal
                                         if (right.HasValue)
                                         {
                                             //Update with left and right value
-                                            innerCache.AddOrUpdate(_resultSelector(change.Key, left, right.Value), change.Key);
+                                            innerCache.AddOrUpdate(_resultSelector(change.Key, new Optional<TLeft>(left), right.Value), change.Key);
                                         }
                                         else
                                         {

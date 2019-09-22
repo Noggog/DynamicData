@@ -10,17 +10,17 @@ namespace DynamicData.Cache.Internal
 {
     internal class FilteredIndexCalculator<TObject, TKey>
     {
-        public IList<Change<TObject, TKey>> Calculate(IKeyValueCollection<TObject, TKey> currentItems,
+        public IList<IChange<TObject, TKey>> Calculate(IKeyValueCollection<TObject, TKey> currentItems,
                                                       IKeyValueCollection<TObject, TKey> previousItems,
                                                       IChangeSet<TObject, TKey> sourceUpdates)
         {
             if (currentItems.SortReason == SortReason.ComparerChanged || currentItems.SortReason== SortReason.InitialLoad)
             {
                 //clear collection and rebuild
-                var removed = previousItems.Select((item, index) => new Change<TObject, TKey>(ChangeReason.Remove, item.Key, item.Value, index));
-                var newitems = currentItems.Select((item, index) => new Change<TObject, TKey>(ChangeReason.Add, item.Key, item.Value, index));
+                var removed = previousItems.Select<IKeyValue<TObject, TKey>, IChange<TObject, TKey>>((item, index) => new Change<TObject, TKey>(ChangeReason.Remove, item.Key, item.Value, index));
+                var newitems = currentItems.Select<IKeyValue<TObject, TKey>, IChange<TObject, TKey>>((item, index) => new Change<TObject, TKey>(ChangeReason.Add, item.Key, item.Value, index));
 
-                return new List<Change<TObject, TKey>>(removed.Union(newitems));
+                return new List<IChange<TObject, TKey>>(removed.Union(newitems));
             }
 
             var previousList = previousItems.ToList();
@@ -30,7 +30,7 @@ namespace DynamicData.Cache.Internal
             var adds = currentItems.Except(previousItems, keyComparer).ToList();
             var inbothKeys = new HashSet<TKey>(previousItems.Intersect(currentItems, keyComparer).Select(x => x.Key));
 
-            var result = new List<Change<TObject, TKey>>();
+            var result = new List<IChange<TObject, TKey>>();
             foreach (var remove in removes)
             {
                 int index = previousList.IndexOf(remove);
@@ -62,8 +62,8 @@ namespace DynamicData.Cache.Internal
             {
                 if (change.Reason == ChangeReason.Update)
                 {
-                    var current = new KeyValuePair<TKey, TObject>(change.Key, change.Current);
-                    var previous = new KeyValuePair<TKey, TObject>(change.Key, change.Previous.Value);
+                    var current = new KeyValue<TObject, TKey>(change.Key, change.Current);
+                    var previous = new KeyValue<TObject, TKey>(change.Key, change.Previous.Value);
 
                     //remove from the actual index
                     var removeIndex = previousList.IndexOf(previous);
@@ -75,12 +75,12 @@ namespace DynamicData.Cache.Internal
                     previousList.Insert(insertIndex, current);
 
                     result.Add(new Change<TObject, TKey>(ChangeReason.Update, current.Key, current.Value,
-                                                         previous.Value, insertIndex, removeIndex));
+                                                         new Optional<TObject>(previous.Value), insertIndex, removeIndex));
                 }
                 else if (change.Reason == ChangeReason.Moved)
                 {
                     //TODO:  We have the index already, would be more efficient to calculate new position from the original index
-                    var current = new KeyValuePair<TKey, TObject>(change.Key, change.Current);
+                    var current = new KeyValue<TObject, TKey>(change.Key, change.Current);
 
                     var previousindex = previousList.IndexOf(current);
                     int desiredIndex = currentItems.IndexOf(current);
@@ -108,14 +108,14 @@ namespace DynamicData.Cache.Internal
 
             //Alternative to evaluate is to check order
             var evaluates = remainingItems.Where(c => c.Reason == ChangeReason.Refresh)
-                                          .OrderByDescending(x => new KeyValuePair<TKey, TObject>(x.Key, x.Current), currentItems.Comparer)
+                                          .OrderByDescending(x => new KeyValue<TObject, TKey>(x.Key, x.Current), currentItems.Comparer)
                                           .ToList();
 
             //calculate moves.  Very expensive operation
             //TODO: Try and make this better
             foreach (var u in evaluates)
             {
-                var current = new KeyValuePair<TKey, TObject>(u.Key, u.Current);
+                var current = new KeyValue<TObject, TKey>(u.Key, u.Current);
                 var old = previousList.IndexOf(current);
 
                 if (old == -1)
@@ -143,8 +143,8 @@ namespace DynamicData.Cache.Internal
             return result;
         }
 
-        private static int GetInsertPositionLinear(IList<KeyValuePair<TKey, TObject>> list, KeyValuePair<TKey, TObject> item,
-                                            IComparer<KeyValuePair<TKey, TObject>> comparer)
+        private static int GetInsertPositionLinear(IList<IKeyValue<TObject, TKey>> list, IKeyValue<TObject, TKey> item,
+                                            IComparer<IKeyValue<TObject, TKey>> comparer)
         {
             for (var i = 0; i < list.Count; i++)
             {

@@ -11,7 +11,7 @@ namespace DynamicData
     /// </summary>
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface IKeyValueCollection<TObject, TKey> : IEnumerable<KeyValuePair<TKey, TObject>>
+    public interface IKeyValueCollection<TObject, TKey> : IEnumerable<IKeyValue<TObject, TKey>>
     {
         /// <summary>
         /// Gets the comparer used to peform the sort
@@ -19,7 +19,7 @@ namespace DynamicData
         /// <value>
         /// The comparer.
         /// </value>
-        IComparer<KeyValuePair<TKey, TObject>> Comparer { get; }
+        IComparer<IKeyValue<TObject, TKey>> Comparer { get; }
 
         /// <summary>
         /// The count of items.
@@ -54,6 +54,6 @@ namespace DynamicData
         /// </returns>
         /// <param name="index">The zero-based index of the element to get. </param>
         /// <returns></returns>
-        KeyValuePair<TKey, TObject> this[int index] { get; }
+        IKeyValue<TObject, TKey> this[int index] { get; }
     }
 }

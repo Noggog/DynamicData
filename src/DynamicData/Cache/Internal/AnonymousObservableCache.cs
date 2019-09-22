@@ -34,7 +34,7 @@ namespace DynamicData.Cache.Internal
 
         public IObservable<int> CountChanged => _cache.CountChanged;
 
-        public IObservable<Change<TObject, TKey>> Watch(TKey key)
+        public IObservable<IChange<TObject, TKey>> Watch(TKey key)
         {
             return _cache.Watch(key);
         }
@@ -55,9 +55,9 @@ namespace DynamicData.Cache.Internal
 
         public int Count => _cache.Count;
 
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _cache.KeyValues;
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _cache.KeyValues;
 
-        public Optional<TObject> Lookup(TKey key)
+        public IOptional<TObject> Lookup(TKey key)
         {
             return _cache.Lookup(key);
         }
@@ -77,7 +77,7 @@ namespace DynamicData.Cache.Internal
             return _cache.TryGetValue(key, out value);
         }
 
-        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        public IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator()
         {
             return _cache.KeyValues.GetEnumerator();
         }

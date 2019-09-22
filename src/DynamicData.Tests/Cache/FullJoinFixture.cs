@@ -48,8 +48,8 @@ namespace DynamicData.Tests.Cache
             _result.Data.Lookup("Device2").HasValue.Should().BeTrue();
             _result.Data.Lookup("Device3").HasValue.Should().BeTrue();
 
-            _result.Data.Items.All(dwm => dwm.MetaData == Optional<DeviceMetaData>.None).Should().BeTrue();
-            _result.Data.Items.All(dwm => dwm.Device != Optional<Device>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
+            _result.Data.Items.All(dwm => !dwm.Device.Equals(Optional<Device>.None)).Should().BeTrue();
         }
 
         [Fact]
@@ -66,8 +66,8 @@ namespace DynamicData.Tests.Cache
             _result.Data.Lookup("Device1").HasValue.Should().BeTrue();
             _result.Data.Lookup("Device2").HasValue.Should().BeTrue();
             _result.Data.Lookup("Device3").HasValue.Should().BeTrue();
-            _result.Data.Items.All(dwm => dwm.MetaData != Optional<DeviceMetaData>.None).Should().BeTrue();
-            _result.Data.Items.All(dwm => dwm.Device == Optional<Device>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
+            _result.Data.Items.All(dwm => dwm.Device.Equals(Optional<Device>.None)).Should().BeTrue();
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace DynamicData.Tests.Cache
 
             3.Should().Be(_result.Data.Count);
 
-            _result.Data.Items.All(dwm => dwm.MetaData != Optional<DeviceMetaData>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace DynamicData.Tests.Cache
             _right.Remove("Device3");
 
             3.Should().Be(_result.Data.Count);
-            2.Should().Be(_result.Data.Items.Count(dwm => dwm.MetaData != Optional<DeviceMetaData>.None));
+            2.Should().Be(_result.Data.Items.Count(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)));
 
             _left.Remove("Device1");
             _result.Data.Lookup("Device1").HasValue.Should().BeTrue();
@@ -142,7 +142,7 @@ namespace DynamicData.Tests.Cache
 
             3.Should().Be(_result.Data.Count);
 
-            _result.Data.Items.All(dwm => dwm.MetaData != Optional<DeviceMetaData>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
         }
 
         [Fact]
@@ -164,7 +164,7 @@ namespace DynamicData.Tests.Cache
 
             3.Should().Be(_result.Data.Count);
 
-            _result.Data.Items.All(dwm => dwm.MetaData != Optional<DeviceMetaData>.None).Should().BeTrue();
+            _result.Data.Items.All(dwm => !dwm.MetaData.Equals(Optional<DeviceMetaData>.None)).Should().BeTrue();
         }
 
         public void Dispose()
@@ -321,10 +321,10 @@ namespace DynamicData.Tests.Cache
         public class DeviceWithMetadata : IEquatable<DeviceWithMetadata>
         {
             public string Key { get; }
-            public Optional<Device> Device { get; set; }
-            public Optional<DeviceMetaData> MetaData { get; }
+            public IOptional<Device> Device { get; set; }
+            public IOptional<DeviceMetaData> MetaData { get; }
 
-            public DeviceWithMetadata(string key, Optional<Device> device, Optional<DeviceMetaData> metaData)
+            public DeviceWithMetadata(string key, IOptional<Device> device, IOptional<DeviceMetaData> metaData)
             {
                 Key = key;
                 Device = device;

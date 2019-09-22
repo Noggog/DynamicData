@@ -116,7 +116,7 @@ namespace DynamicData
         /// <exception cref="System.ArgumentException">For ChangeReason.Add, a previous value cannot be specified
         /// or
         /// For ChangeReason.Change, must supply previous value</exception>
-        public Change(ListChangeReason reason, T current, Optional<T> previous, int currentIndex = -1, int previousIndex = -1)
+        public Change(ListChangeReason reason, T current, IOptional<T> previous, int currentIndex = -1, int previousIndex = -1)
         {
             if (reason == ListChangeReason.Add && previous.HasValue)
             {

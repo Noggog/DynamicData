@@ -16,7 +16,7 @@ namespace DynamicData
         {
         }
 
-        public GroupChangeSet(IEnumerable<Change<IGroup<TObject, TKey, TGroupKey>, TGroupKey>> items)
+        public GroupChangeSet(IEnumerable<IChange<IGroup<TObject, TKey, TGroupKey>, TGroupKey>> items)
             : base(items)
         {
         }

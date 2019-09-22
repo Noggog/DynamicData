@@ -6,14 +6,14 @@ using System.Collections.Generic;
 
 namespace DynamicData.Cache.Internal
 {
-    internal sealed class KeyComparer<TObject, TKey> : IEqualityComparer<KeyValuePair<TKey, TObject>>
+    internal sealed class KeyComparer<TObject, TKey> : IEqualityComparer<IKeyValue<TObject, TKey>>
     {
-        public bool Equals(KeyValuePair<TKey, TObject> x, KeyValuePair<TKey, TObject> y)
+        public bool Equals(IKeyValue<TObject, TKey> x, IKeyValue<TObject, TKey> y)
         {
             return x.Key.Equals(y.Key);
         }
 
-        public int GetHashCode(KeyValuePair<TKey, TObject> obj)
+        public int GetHashCode(IKeyValue<TObject, TKey> obj)
         {
             return obj.Key.GetHashCode();
         }

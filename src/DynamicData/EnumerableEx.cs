@@ -47,7 +47,7 @@ namespace DynamicData
 
             return Observable.Create<IChangeSet<TObject, TKey>>(obs =>
             {
-                var changes = source.Select(x => new Change<TObject, TKey>(ChangeReason.Add, keySelector(x), x));
+                var changes = source.Select<TObject, IChange<TObject, TKey>>(x => new Change<TObject, TKey>(ChangeReason.Add, keySelector(x), x));
                 var changeSet = new ChangeSet<TObject, TKey>(changes);
                 obs.OnNext(changeSet);
                 if (completable)

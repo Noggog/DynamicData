@@ -281,7 +281,7 @@ namespace DynamicData
                 var previous = _innerList[index];
                 _innerList[index] = item;
 
-                _changes.Add(new Change<T>(ListChangeReason.Refresh, item, previous, index));
+                _changes.Add(new Change<T>(ListChangeReason.Refresh, item, new Optional<T>(previous), index));
             }
         }
 
@@ -516,7 +516,7 @@ namespace DynamicData
                 }
 
                 previous = _innerList[index];
-                _changes.Add(new Change<T>(ListChangeReason.Replace, item, previous, index, index));
+                _changes.Add(new Change<T>(ListChangeReason.Replace, item, new Optional<T>(previous), index, index));
                 _innerList[index] = item;
             }
 

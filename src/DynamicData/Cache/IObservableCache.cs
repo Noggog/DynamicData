@@ -13,13 +13,13 @@ namespace DynamicData
     /// </summary>
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface IConnectableCache<TObject, TKey>
+    public interface IConnectableCache<out TObject, TKey>
     {
         /// <summary>
         /// Returns an observable of any changes which match the specified key.  The sequence starts with the inital item in the cache (if there is one).
         /// </summary>
         /// <param name="key">The key.</param>
-        IObservable<Change<TObject, TKey>> Watch(TKey key);
+        IObservable<IChange<TObject, TKey>> Watch(TKey key);
 
         /// <summary>
         /// Returns a filtered stream of cache changes preceded with the initial filtered state
@@ -45,7 +45,7 @@ namespace DynamicData
     /// </summary>
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface IObservableCache<TObject, TKey> : IConnectableCache<TObject, TKey>, IDisposable, IReadOnlyCache<TObject, TKey>
+    public interface IObservableCache<out TObject, TKey> : IConnectableCache<TObject, TKey>, IDisposable, IReadOnlyCache<TObject, TKey>
     {
         /// <summary>
         /// Gets the Items
@@ -55,7 +55,7 @@ namespace DynamicData
         /// <summary>
         /// Gets the key value pairs
         /// </summary>
-        IEnumerable<KeyValuePair<TKey, TObject>> KeyValues { get; }
+        IEnumerable<IKeyValue<TObject, TKey>> KeyValues { get; }
 
         /// <summary>
         /// Lookup a single item using the specified key.
@@ -65,7 +65,7 @@ namespace DynamicData
         /// </remarks>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        Optional<TObject> Lookup(TKey key);
+        IOptional<TObject> Lookup(TKey key);
 
         /// <summary>
         /// The total count of cached items

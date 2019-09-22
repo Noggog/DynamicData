@@ -16,12 +16,12 @@ namespace DynamicData.PLinq
     internal sealed class PTransform<TDestination, TSource, TKey>
     {
         private readonly IObservable<IChangeSet<TSource, TKey>> _source;
-        private readonly Func<TSource, Optional<TSource>, TKey, TDestination> _transformFactory;
+        private readonly Func<TSource, IOptional<TSource>, TKey, TDestination> _transformFactory;
         private readonly ParallelisationOptions _parallelisationOptions;
         private readonly Action<Error<TSource, TKey>> _exceptionCallback;
 
         public PTransform(IObservable<IChangeSet<TSource, TKey>> source,
-            Func<TSource, Optional<TSource>, TKey, TDestination> transformFactory,
+            Func<TSource, IOptional<TSource>, TKey, TDestination> transformFactory,
             ParallelisationOptions parallelisationOptions,
             Action<Error<TSource, TKey>> exceptionCallback = null)
         {
@@ -52,7 +52,7 @@ namespace DynamicData.PLinq
             return ProcessUpdates(cache, transformed);
         }
 
-        private TransformResult ToDestination(Change<TSource, TKey> change)
+        private TransformResult ToDestination(IChange<TSource, TKey> change)
         {
             try
             {
@@ -109,22 +109,22 @@ namespace DynamicData.PLinq
 
         private struct TransformResult
         {
-            public Change<TSource, TKey> Change { get; }
+            public IChange<TSource, TKey> Change { get; }
             public Exception Error { get; }
             public bool Success { get; }
-            public Optional<TDestination> Destination { get; }
+            public IOptional<TDestination> Destination { get; }
             public TKey Key { get; }
 
-            public TransformResult(Change<TSource, TKey> change, TDestination destination)
+            public TransformResult(IChange<TSource, TKey> change, TDestination destination)
                 : this()
             {
                 Change = change;
-                Destination = destination;
+                Destination = new Optional<TDestination>(destination);
                 Success = true;
                 Key = change.Key;
             }
 
-            public TransformResult(Change<TSource, TKey> change)
+            public TransformResult(IChange<TSource, TKey> change)
                 : this()
             {
                 Change = change;
@@ -133,7 +133,7 @@ namespace DynamicData.PLinq
                 Key = change.Key;
             }
 
-            public TransformResult(Change<TSource, TKey> change, Exception error)
+            public TransformResult(IChange<TSource, TKey> change, Exception error)
                 : this()
             {
                 Change = change;

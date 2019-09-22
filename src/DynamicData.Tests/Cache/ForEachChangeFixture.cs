@@ -24,7 +24,7 @@ namespace DynamicData.Tests.Cache
         [Fact]
         public void Test()
         {
-            var messages = new List<Change<Person, string>>();
+            var messages = new List<IChange<Person, string>>();
             var messageWriter = _source
                 .Connect()
                 .ForEachChange(messages.Add)

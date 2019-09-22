@@ -14,7 +14,7 @@ namespace DynamicData
     /// </summary>
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface IChangeSet<TObject, TKey> : IChangeSet, IEnumerable<Change<TObject, TKey>>
+    public interface IChangeSet<out TObject, TKey> : IChangeSet, IEnumerable<IChange<TObject, TKey>>
     {
         /// <summary>
         /// The number of updates

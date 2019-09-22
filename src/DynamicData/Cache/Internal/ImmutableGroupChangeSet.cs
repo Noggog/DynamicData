@@ -15,7 +15,7 @@ namespace DynamicData.Cache.Internal
         {
         }
 
-        public ImmutableGroupChangeSet(IEnumerable<Change<IGrouping<TObject, TKey, TGroupKey>, TGroupKey>> items)
+        public ImmutableGroupChangeSet(IEnumerable<IChange<IGrouping<TObject, TKey, TGroupKey>, TGroupKey>> items)
             : base(items)
         {
         }

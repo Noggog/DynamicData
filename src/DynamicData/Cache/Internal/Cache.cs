@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DynamicData.Kernel;
 
 namespace DynamicData.Cache.Internal
@@ -14,7 +15,7 @@ namespace DynamicData.Cache.Internal
         private readonly Dictionary<TKey, TObject> _data;
 
         public int Count => _data.Count;
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _data;
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _data.Select(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value));
         public IEnumerable<TObject> Items => _data.Values;
         public IEnumerable<TKey> Keys => _data.Keys;
 
@@ -67,7 +68,7 @@ namespace DynamicData.Cache.Internal
             }
         }
 
-        public Optional<TObject> Lookup(TKey key)
+        public IOptional<TObject> Lookup(TKey key)
         {
             return _data.Lookup(key);
         }

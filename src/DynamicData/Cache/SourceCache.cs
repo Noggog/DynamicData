@@ -59,7 +59,7 @@ namespace DynamicData
         public IObservable<IChangeSet<TObject, TKey>> Preview(Func<TObject, bool> predicate = null) => _innerCache.Preview(predicate);
 
         /// <inheritdoc />
-        public IObservable<Change<TObject, TKey>> Watch(TKey key) => _innerCache.Watch(key);
+        public IObservable<IChange<TObject, TKey>> Watch(TKey key) => _innerCache.Watch(key);
 
         /// <inheritdoc />
         public int Count => _innerCache.Count;
@@ -68,13 +68,13 @@ namespace DynamicData
         public IEnumerable<TObject> Items => _innerCache.Items;
 
         /// <inheritdoc />
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _innerCache.KeyValues;
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _innerCache.KeyValues;
 
         /// <inheritdoc />
         public IEnumerable<TKey> Keys => _innerCache.Keys;
 
         /// <inheritdoc />
-        public Optional<TObject> Lookup(TKey key) => _innerCache.Lookup(key);
+        public IOptional<TObject> Lookup(TKey key) => _innerCache.Lookup(key);
 
         /// <inheritdoc />
         public void Dispose()
@@ -117,7 +117,7 @@ namespace DynamicData
         /// <summary> 
         /// Returns enumerator of all key value pairs in cache 
         /// </summary> 
-        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        public IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator()
         {
             return _innerCache.KeyValues.GetEnumerator();
         }
@@ -129,7 +129,7 @@ namespace DynamicData
 
         IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator()
         {
-            return _innerCache.KeyValues.Select<KeyValuePair<TKey, TObject>, IKeyValue<TObject, TKey>>(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value)).GetEnumerator();
+            return _innerCache.KeyValues.GetEnumerator();
         }
         #endregion
     }

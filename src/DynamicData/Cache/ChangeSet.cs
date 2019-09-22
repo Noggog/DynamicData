@@ -25,7 +25,7 @@ namespace DynamicData
     /// <summary>
     /// A collection of changes
     /// </summary>
-    public class ChangeSet<TObject, TKey> : List<Change<TObject, TKey>>, IChangeSet<TObject, TKey>
+    public class ChangeSet<TObject, TKey> : List<IChange<TObject, TKey>>, IChangeSet<TObject, TKey>
     {
         /// <summary>
         /// An empty change set
@@ -38,7 +38,7 @@ namespace DynamicData
         }
 
         /// <inheritdoc />
-        public ChangeSet(IEnumerable<Change<TObject, TKey>> collection)
+        public ChangeSet(IEnumerable<IChange<TObject, TKey>> collection)
             : base(collection)
         {
         }

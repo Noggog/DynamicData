@@ -40,7 +40,7 @@ namespace DynamicData
         /// 
         /// This is only when Reason==ChangeReason.Replace.
         /// </summary>
-        public Optional<T> Previous { get; }
+        public IOptional<T> Previous { get; }
 
         /// <summary>
         /// The previous index.
@@ -65,7 +65,7 @@ namespace DynamicData
         /// <exception cref="System.ArgumentException">For ChangeReason.Add, a previous value cannot be specified
         /// or
         /// For ChangeReason.Change, must supply previous value</exception>
-        public ItemChange(ListChangeReason reason, T current, Optional<T> previous, int currentIndex = -1, int previousIndex = -1)
+        public ItemChange(ListChangeReason reason, T current, IOptional<T> previous, int currentIndex = -1, int previousIndex = -1)
             : this()
         {
             Reason = reason;

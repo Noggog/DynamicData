@@ -22,7 +22,7 @@ namespace DynamicData.PLinq
                    && (option.Threshold >= 0 && source.Count >= option.Threshold);
         }
 
-        internal static ParallelQuery<Change<TObject, TKey>> Parallelise<TObject, TKey>(this IChangeSet<TObject, TKey> source, ParallelisationOptions option)
+        internal static ParallelQuery<IChange<TObject, TKey>> Parallelise<TObject, TKey>(this IChangeSet<TObject, TKey> source, ParallelisationOptions option)
         {
             switch (option.Type)
             {
@@ -36,13 +36,13 @@ namespace DynamicData.PLinq
             }
         }
 
-        internal static bool ShouldParallelise<TObject, TKey>(this IEnumerable<KeyValuePair<TKey, TObject>> source, ParallelisationOptions option)
+        internal static bool ShouldParallelise<TObject, TKey>(this IEnumerable<IKeyValue<TObject, TKey>> source, ParallelisationOptions option)
         {
             return (option.Type == ParallelType.Parallelise || option.Type == ParallelType.Ordered)
                    && (option.Threshold >= 0 && source.Skip(option.Threshold).Any());
         }
 
-        internal static ParallelQuery<KeyValuePair<TKey, TObject>> Parallelise<TObject, TKey>(this IEnumerable<KeyValuePair<TKey, TObject>> source, ParallelisationOptions option)
+        internal static ParallelQuery<IKeyValue<TObject, TKey>> Parallelise<TObject, TKey>(this IEnumerable<IKeyValue<TObject, TKey>> source, ParallelisationOptions option)
         {
             switch (option.Type)
             {

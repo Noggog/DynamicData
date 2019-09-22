@@ -111,7 +111,7 @@ namespace DynamicData.Cache.Internal
             }
         }
 
-        private void ProcessChanges(ChangeAwareCache<TObject, TKey> target, MergeContainer[] sourceLists, IEnumerable<KeyValuePair<TKey, TObject>> items)
+        private void ProcessChanges(ChangeAwareCache<TObject, TKey> target, MergeContainer[] sourceLists, IEnumerable<IKeyValue<TObject, TKey>> items)
         {
             //check whether the item should be removed from the list (or in the case of And, added)
 

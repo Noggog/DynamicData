@@ -13,12 +13,12 @@ namespace DynamicData.Cache.Internal
     internal class TransformAsync<TDestination, TSource, TKey>
     {
         private readonly IObservable<IChangeSet<TSource, TKey>> _source;
-        private readonly Func<TSource, Optional<TSource>, TKey, Task<TDestination>> _transformFactory;
+        private readonly Func<TSource, IOptional<TSource>, TKey, Task<TDestination>> _transformFactory;
         private readonly IObservable<Func<TSource, TKey, bool>> _forceTransform;
         private readonly Action<Error<TSource, TKey>> _exceptionCallback;
         private readonly int _maximumConcurrency;
 
-        public TransformAsync(IObservable<IChangeSet<TSource, TKey>> source, Func<TSource, Optional<TSource>, TKey, Task<TDestination>> transformFactory, Action<Error<TSource, TKey>> exceptionCallback, int maximumConcurrency = 1, IObservable<Func<TSource, TKey, bool>> forceTransform = null)
+        public TransformAsync(IObservable<IChangeSet<TSource, TKey>> source, Func<TSource, IOptional<TSource>, TKey, Task<TDestination>> transformFactory, Action<Error<TSource, TKey>> exceptionCallback, int maximumConcurrency = 1, IObservable<Func<TSource, TKey, bool>> forceTransform = null)
         {
             _source = source;
             _exceptionCallback = exceptionCallback;
@@ -53,7 +53,7 @@ namespace DynamicData.Cache.Internal
         {
             var toTransform = cache.KeyValues
                           .Where(kvp => shouldTransform(kvp.Value.Source, kvp.Key))
-                          .Select(kvp => new Change<TSource,TKey>(ChangeReason.Update,  kvp.Key, kvp.Value.Source, kvp.Value.Source))
+                          .Select<IKeyValue<TransformedItemContainer, TKey>, IChange<TSource, TKey>>(kvp => new Change<TSource, TKey>(ChangeReason.Update, kvp.Key, kvp.Value.Source, new Optional<TSource>(kvp.Value.Source)))
                           .ToArray();
 
             var transformed = await toTransform.SelectParallel(Transform, _maximumConcurrency).ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace DynamicData.Cache.Internal
             return ProcessUpdates(cache, transformed.ToArray());
         }
 
-        private async Task<TransformResult> Transform(Change<TSource, TKey> change)
+        private async Task<TransformResult> Transform(IChange<TSource, TKey> change)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace DynamicData.Cache.Internal
             }
 
             var changes = cache.CaptureChanges();
-            var transformed = changes.Select(change => new Change<TDestination, TKey>(change.Reason,
+            var transformed = changes.Select<IChange<TransformedItemContainer, TKey>, IChange<TDestination, TKey>>(change => new Change<TDestination, TKey>(change.Reason,
                 change.Key,
                 change.Current.Destination,
                 change.Previous.Convert(x => x.Destination),
@@ -132,21 +132,21 @@ namespace DynamicData.Cache.Internal
 
         private sealed class TransformResult
         {
-            public Change<TSource, TKey> Change { get; }
+            public IChange<TSource, TKey> Change { get; }
             public Exception Error { get; }
             public bool Success { get; }
-            public Optional<TransformedItemContainer> Container { get; }
+            public IOptional<TransformedItemContainer> Container { get; }
             public TKey Key { get; }
 
-            public TransformResult(Change<TSource, TKey> change, TransformedItemContainer container)
+            public TransformResult(IChange<TSource, TKey> change, TransformedItemContainer container)
             {
                 Change = change;
-                Container = container;
+                Container = new Optional<TransformedItemContainer>(container);
                 Success = true;
                 Key = change.Key;
             }
 
-            public TransformResult(Change<TSource, TKey> change)
+            public TransformResult(IChange<TSource, TKey> change)
             {
                 Change = change;
                 Container = Optional<TransformedItemContainer>.None;
@@ -154,7 +154,7 @@ namespace DynamicData.Cache.Internal
                 Key = change.Key;
             }
 
-            public TransformResult(Change<TSource, TKey> change, Exception error)
+            public TransformResult(IChange<TSource, TKey> change, Exception error)
             {
                 Change = change;
                 Error = error;

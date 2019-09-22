@@ -24,7 +24,7 @@ namespace DynamicData.Cache.Internal
         {
             return _source.Select(changes =>
             {
-                var transformed = changes.Select(change => new Change<TDestination, TKey>(change.Reason,
+                var transformed = changes.Select<IChange<TSource, TKey>, IChange<TDestination, TKey>>(change => new Change<TDestination, TKey>(change.Reason,
                                                                           change.Key,
                                                                           _converter(change.Current),
                                                                           change.Previous.Convert(_converter),

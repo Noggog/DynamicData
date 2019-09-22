@@ -19,7 +19,7 @@ namespace DynamicData.Profile
             // Arrange
             var iList = Enumerable.Range(1, 100)
                 .Select(j=> new Person("P" + j, j))
-                .Select(p => new Change<Person,string>(ChangeReason.Add, p.Name,p))
+                .Select<Person, IChange<Person, string>>(p => new Change<Person, string>(ChangeReason.Add, p.Name,p))
                 .ToList();
 
             ChangeSet<Person, string> changes = new ChangeSet<Person, string>(iList);
@@ -45,13 +45,13 @@ namespace DynamicData.Profile
             // Arrange
             var iList = Enumerable.Range(1, 100)
                 .Select(j => new Person("P" + j, j))
-                .Select(p => new Change<Person, string>(ChangeReason.Add, p.Name, p))
+                .Select<Person, IChange<Person, string>>(p => new Change<Person, string>(ChangeReason.Add, p.Name, p))
                 .ToList();
 
             var changes = new ChangeSet<Person, string>(iList);
 
             // Act
-            EnumerableIList<Change<Person, string>> eIList = changes;
+            EnumerableIList<IChange<Person, string>> eIList = changes;
             var startAllocs = GC.GetAllocatedBytesForCurrentThread();
 
             // Assert

@@ -17,7 +17,7 @@ namespace DynamicData.Experimental
 {
     internal sealed class Watcher<TObject, TKey> : IWatcher<TObject, TKey>
     {
-        private readonly IntermediateCache<SubjectWithRefCount<Change<TObject, TKey>>, TKey> _subscribers = new IntermediateCache<SubjectWithRefCount<Change<TObject, TKey>>, TKey>();
+        private readonly IntermediateCache<SubjectWithRefCount<IChange<TObject, TKey>>, TKey> _subscribers = new IntermediateCache<SubjectWithRefCount<IChange<TObject, TKey>>, TKey>();
         private readonly IObservableCache<TObject, TKey> _source;
         private readonly object _locker = new object();
 
@@ -52,9 +52,9 @@ namespace DynamicData.Experimental
             });
         }
 
-        public IObservable<Change<TObject, TKey>> Watch(TKey key)
+        public IObservable<IChange<TObject, TKey>> Watch(TKey key)
         {
-            return Observable.Create<Change<TObject, TKey>>
+            return Observable.Create<IChange<TObject, TKey>>
                 (
                     observer =>
                     {
@@ -62,14 +62,14 @@ namespace DynamicData.Experimental
                         {
                             //Create or find the existing subscribers
                             var existing = _subscribers.Lookup(key);
-                            SubjectWithRefCount<Change<TObject, TKey>> subject;
+                            SubjectWithRefCount<IChange<TObject, TKey>> subject;
                             if (existing.HasValue)
                             {
                                 subject = existing.Value;
                             }
                             else
                             {
-                                subject = new SubjectWithRefCount<Change<TObject, TKey>>(new ReplaySubject<Change<TObject, TKey>>(1));
+                                subject = new SubjectWithRefCount<IChange<TObject, TKey>>(new ReplaySubject<IChange<TObject, TKey>>(1));
 
                                 var initial = _source.Lookup(key);
                                 if (initial.HasValue)

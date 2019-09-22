@@ -16,6 +16,6 @@ namespace DynamicData.Experimental
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        IObservable<Change<TObject, TKey>> Watch(TKey key);
+        IObservable<IChange<TObject, TKey>> Watch(TKey key);
     }
 }

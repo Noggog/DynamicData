@@ -168,9 +168,9 @@ namespace DynamicData
 
         public IObservable<int> CountChanged => _countChanged.Value.StartWith(_readerWriter.Count).DistinctUntilChanged();
 
-        public IObservable<Change<TObject, TKey>> Watch(TKey key)
+        public IObservable<IChange<TObject, TKey>> Watch(TKey key)
         {
-            return Observable.Create<Change<TObject, TKey>>
+            return Observable.Create<IChange<TObject, TKey>>
             (
                 observer =>
                 {
@@ -218,11 +218,11 @@ namespace DynamicData
 
         internal ChangeSet<TObject, TKey> GetInitialUpdates(Func<TObject, bool> filter = null) => _readerWriter.GetInitialUpdates(filter);
 
-        public Optional<TObject> Lookup(TKey key) => _readerWriter.Lookup(key);
+        public IOptional<TObject> Lookup(TKey key) => _readerWriter.Lookup(key);
 
         public IEnumerable<TKey> Keys => _readerWriter.Keys;
 
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _readerWriter.KeyValues;
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _readerWriter.KeyValues;
 
         public IEnumerable<TObject> Items => _readerWriter.Items;
 
@@ -262,7 +262,7 @@ namespace DynamicData
 
         IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator()
         {
-            return this.KeyValues.Select<KeyValuePair<TKey, TObject>, IKeyValue<TObject, TKey>>(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value)).GetEnumerator();
+            return this.KeyValues.GetEnumerator();
         }
     }
 }

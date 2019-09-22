@@ -16,7 +16,7 @@ namespace DynamicData
         public IKeyValueCollection<TObject, TKey> SortedItems { get; }
         public IVirtualResponse Response { get; }
 
-        public VirtualChangeSet(IEnumerable<Change<TObject, TKey>> items, IKeyValueCollection<TObject, TKey> sortedItems, IVirtualResponse response)
+        public VirtualChangeSet(IEnumerable<IChange<TObject, TKey>> items, IKeyValueCollection<TObject, TKey> sortedItems, IVirtualResponse response)
             : base(items)
         {
             SortedItems = sortedItems;

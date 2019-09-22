@@ -27,7 +27,7 @@ namespace DynamicData
         public int Count => _data?.Count ?? 0;
 
         /// <inheritdoc />
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _data ?? Enumerable.Empty<KeyValuePair<TKey, TObject>>();
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _data?.Select(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value)) ?? Enumerable.Empty<IKeyValue<TObject, TKey>>();
 
         /// <inheritdoc />
         public IEnumerable<TObject> Items => _data?.Values ?? Enumerable.Empty<TObject>();
@@ -58,7 +58,7 @@ namespace DynamicData
         }
 
         /// <inheritdoc />
-        public Optional<TObject> Lookup(TKey key) => _data?.Lookup(key) ?? Optional<TObject>.None;
+        public IOptional<TObject> Lookup(TKey key) => _data?.Lookup(key) ?? Optional<TObject>.None;
 
         /// <inheritdoc />
         public bool TryGetValue(TKey key, out TObject value)
@@ -87,7 +87,7 @@ namespace DynamicData
             EnsureInitialised();
 
             _changes.Add(_data.TryGetValue(key, out var existingItem)
-                ? new Change<TObject, TKey>(ChangeReason.Update, key, item, existingItem)
+                ? new Change<TObject, TKey>(ChangeReason.Update, key, item, new Optional<TObject>(existingItem))
                 : new Change<TObject, TKey>(ChangeReason.Add, key, item));
 
             _data[key] = item;
@@ -179,7 +179,7 @@ namespace DynamicData
         public void Refresh()
         {
             EnsureInitialised(_data.Count);
-            _changes.AddRange(_data.Select(t => new Change<TObject, TKey>(ChangeReason.Refresh, t.Key, t.Value)));
+            _changes.AddRange(_data.Select<KeyValuePair<TKey, TObject>, IChange<TObject, TKey>>(t => new Change<TObject, TKey>(ChangeReason.Refresh, t.Key, t.Value)));
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace DynamicData
 
             EnsureInitialised(_data.Count);
 
-            var toremove = _data.Select(kvp => new Change<TObject, TKey>(ChangeReason.Remove, kvp.Key, kvp.Value));
+            var toremove = _data.Select<KeyValuePair<TKey, TObject>, IChange<TObject, TKey>>(kvp => new Change<TObject, TKey>(ChangeReason.Remove, kvp.Key, kvp.Value));
             _changes.AddRange(toremove);
             _data.Clear();
         }

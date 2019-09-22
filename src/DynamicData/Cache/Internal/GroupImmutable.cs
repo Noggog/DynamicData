@@ -65,11 +65,11 @@ namespace DynamicData.Cache.Internal
             public IImmutableGroupChangeSet<TObject, TKey, TGroupKey> Regroup()
             {
                 //re-evaluate all items in the group
-                var items = _itemCache.Select(item => new Change<TObject, TKey>(ChangeReason.Refresh, item.Key, item.Value.Item));
+                var items = _itemCache.Select<KeyValuePair<TKey, ChangeWithGroup>, IChange<TObject, TKey>>(item => new Change<TObject, TKey>(ChangeReason.Refresh, item.Key, item.Value.Item));
                 return HandleUpdates(new ChangeSet<TObject, TKey>(items));
             }
 
-            private IImmutableGroupChangeSet<TObject, TKey, TGroupKey> HandleUpdates(IEnumerable<Change<TObject, TKey>> changes)
+            private IImmutableGroupChangeSet<TObject, TKey, TGroupKey> HandleUpdates(IEnumerable<IChange<TObject, TKey>> changes)
             {
                 //need to keep track of effected groups to calculate correct notifications 
                 var initialStateOfGroups = new Dictionary<TGroupKey, IGrouping<TObject, TKey, TGroupKey>>();
@@ -197,7 +197,7 @@ namespace DynamicData.Cache.Internal
 
             private IImmutableGroupChangeSet<TObject, TKey, TGroupKey> CreateChangeSet(IDictionary<TGroupKey, IGrouping<TObject, TKey, TGroupKey>> initialGroupState)
             {
-                var result = new List<Change<IGrouping<TObject, TKey, TGroupKey>, TGroupKey>>();
+                var result = new List<IChange<IGrouping<TObject, TKey, TGroupKey>, TGroupKey>>();
                 foreach (var intialGroup in initialGroupState)
                 {
                     var key = intialGroup.Key;
@@ -263,7 +263,7 @@ namespace DynamicData.Cache.Internal
 
             private struct ChangeWithGroup : IEquatable<ChangeWithGroup>
             {
-                public ChangeWithGroup(Change<TObject, TKey> change, Func<TObject, TGroupKey> keySelector)
+                public ChangeWithGroup(IChange<TObject, TKey> change, Func<TObject, TGroupKey> keySelector)
                 {
                     GroupKey = keySelector(change.Current);
                     Item = change.Current;

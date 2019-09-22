@@ -16,7 +16,7 @@ namespace DynamicData.Cache.Internal
     internal sealed class IndexCalculator<TObject, TKey>
     {
         private KeyValueComparer<TObject, TKey> _comparer;
-        private List<KeyValuePair<TKey, TObject>> _list;
+        private List<IKeyValue<TObject, TKey>> _list;
 
         private readonly SortOptimisations _optimisations;
 
@@ -27,7 +27,7 @@ namespace DynamicData.Cache.Internal
         {
             _comparer = comparer;
             _optimisations = optimisations;
-            _list = new List<KeyValuePair<TKey, TObject>>();
+            _list = new List<IKeyValue<TObject, TKey>>();
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace DynamicData.Cache.Internal
             //for the first batch of changes may have arrived before the comparer was set.
             //therefore infer the first batch of changes from the cache
             _list = cache.KeyValues.OrderBy(kv => kv, _comparer).ToList();
-            var initialItems = _list.Select((t, index) => new Change<TObject, TKey>(ChangeReason.Add, t.Key, t.Value, index));
+            var initialItems = _list.Select<IKeyValue<TObject, TKey>, IChange<TObject, TKey>>((t, index) => new Change<TObject, TKey>(ChangeReason.Add, t.Key, t.Value, index));
             return new ChangeSet<TObject, TKey>(initialItems);
         }
 
@@ -62,7 +62,7 @@ namespace DynamicData.Cache.Internal
 
         public IChangeSet<TObject, TKey> Reorder()
         {
-            var result = new List<Change<TObject, TKey>>();
+            var result = new List<IChange<TObject, TKey>>();
 
             if (_optimisations.HasFlag(SortOptimisations.IgnoreEvaluates))
             {
@@ -75,11 +75,11 @@ namespace DynamicData.Cache.Internal
                 var sorted = _list.OrderBy(t => t, _comparer).ToList();
                 foreach (var item in sorted)
                 {
-                    KeyValuePair<TKey, TObject> current = item;
+                    IKeyValue<TObject, TKey> current = item;
                     index++;
 
                     //Cannot use binary search as Resort is implicit of a mutable change
-                    KeyValuePair<TKey, TObject> existing = _list[index];
+                    IKeyValue<TObject, TKey> existing = _list[index];
                     var areequal = EqualityComparer<TKey>.Default.Equals(current.Key, existing.Key);
                     if (areequal)
                     {
@@ -103,12 +103,12 @@ namespace DynamicData.Cache.Internal
         /// <returns></returns>
         public IChangeSet<TObject, TKey> Calculate(IChangeSet<TObject, TKey> changes)
         {
-            var result = new List<Change<TObject, TKey>>(changes.Count);
-            var refreshes = new List<Change<TObject, TKey>>(changes.Refreshes);
+            var result = new List<IChange<TObject, TKey>>(changes.Count);
+            var refreshes = new List<IChange<TObject, TKey>>(changes.Refreshes);
 
             foreach (var u in changes)
             {
-                var current = new KeyValuePair<TKey, TObject>(u.Key, u.Current);
+                var current = new KeyValue<TObject, TKey>(u.Key, u.Current);
 
                 switch (u.Reason)
                 {
@@ -124,7 +124,7 @@ namespace DynamicData.Cache.Internal
 
                     case ChangeReason.Update:
                         {
-                            var previous = new KeyValuePair<TKey, TObject>(u.Key, u.Previous.Value);
+                            var previous = new KeyValue<TObject, TKey>(u.Key, u.Previous.Value);
                             var old = GetCurrentPosition(previous);
                             _list.RemoveAt(old);
 
@@ -158,7 +158,7 @@ namespace DynamicData.Cache.Internal
             }
 
             //for evaluates, check whether the change forces a new position
-            var evaluates = refreshes.OrderByDescending(x => new KeyValuePair<TKey, TObject>(x.Key, x.Current), _comparer)
+            var evaluates = refreshes.OrderByDescending(x => new KeyValue<TObject, TKey>(x.Key, x.Current), _comparer)
                                    .ToList();
 
             if (evaluates.Count != 0 && _optimisations.HasFlag(SortOptimisations.IgnoreEvaluates))
@@ -172,7 +172,7 @@ namespace DynamicData.Cache.Internal
                 //TODO: Try and make this better
                 foreach (var u in evaluates)
                 {
-                    var current = new KeyValuePair<TKey, TObject>(u.Key, u.Current);
+                    var current = new KeyValue<TObject, TKey>(u.Key, u.Current);
                     var old = _list.IndexOf(current);
                     if (old == -1)
                     {
@@ -200,11 +200,11 @@ namespace DynamicData.Cache.Internal
             return new ChangeSet<TObject, TKey>(result);
         }
 
-        public IComparer<KeyValuePair<TKey, TObject>> Comparer => _comparer;
+        public IComparer<IKeyValue<TObject, TKey>> Comparer => _comparer;
 
-        public List<KeyValuePair<TKey, TObject>> List => _list;
+        public List<IKeyValue<TObject, TKey>> List => _list;
 
-        private int GetCurrentPosition(KeyValuePair<TKey, TObject> item)
+        private int GetCurrentPosition(IKeyValue<TObject, TKey> item)
         {
             int index;
 
@@ -219,7 +219,7 @@ namespace DynamicData.Cache.Internal
             }
             else
             {
-                index = _list.IndexOf(item);
+                index = _list.IndexOf(item: item, equalityComparer: KeyValueComparer<TObject, TKey>.Instance);
 
                 if (index < 0)
                 {
@@ -230,7 +230,7 @@ namespace DynamicData.Cache.Internal
             return index;
         }
 
-        private int GetInsertPositionLinear(IList<KeyValuePair<TKey, TObject>> list, KeyValuePair<TKey, TObject> item)
+        private int GetInsertPositionLinear(IList<IKeyValue<TObject, TKey>> list, IKeyValue<TObject, TKey> item)
         {
             for (var i = 0; i < list.Count; i++)
             {
@@ -243,7 +243,7 @@ namespace DynamicData.Cache.Internal
             return _list.Count;
         }
 
-        private int GetInsertPositionBinary(KeyValuePair<TKey, TObject> item)
+        private int GetInsertPositionBinary(KeyValue<TObject, TKey> item)
         {
             int index = _list.BinarySearch(item, _comparer);
 

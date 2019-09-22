@@ -8,6 +8,29 @@ using System.Collections.Generic;
 
 namespace DynamicData.Kernel
 {
+    public interface IOptional<out T>
+    {
+        /// <summary>
+        /// Gets a value indicating whether the current <see cref="T:System.Nullable`1"/> object has a value.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// true if the current <see cref="T:System.Nullable`1"/> object has a value; false if the current <see cref="T:System.Nullable`1"/> object has no value.
+        /// </returns>
+        bool HasValue { get; }
+
+        /// <summary>
+        /// Gets the value of the current <see cref="T:System.Nullable`1"/> value.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The value of the current <see cref="T:System.Nullable`1"/> object if the <see cref="P:System.Nullable`1.HasValue"/> property is true. An exception is thrown if the <see cref="P:System.Nullable`1.HasValue"/> property is false.
+        /// </returns>
+        /// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.Nullable`1.HasValue"/> property is false.</exception>
+        T Value { get; }
+    }
+
+
     /// <summary>
     /// Optional factory class
     /// </summary>
@@ -39,7 +62,7 @@ namespace DynamicData.Kernel
     /// The equivalent of a nullable type which works on value and reference types
     /// </summary>
     /// <typeparam name="T">The underlying value type of the <see cref="T:System.Nullable`1"/> generic type.</typeparam><filterpriority>1</filterpriority>
-    public readonly struct Optional<T> : IEquatable<Optional<T>>
+    public readonly struct Optional<T> : IOptional<T>, IEquatable<Optional<T>>
     {
         private readonly T _value;
 
@@ -146,6 +169,24 @@ namespace DynamicData.Kernel
         public static bool operator !=(Optional<T> left, Optional<T> right)
         {
             return !left.Equals(right);
+        }
+
+        public static bool operator ==(Optional<T> left, IOptional<T> right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Optional<T> left, IOptional<T> right)
+        {
+            return !left.Equals(right);
+        }
+
+        /// <inheritdoc />
+        public bool Equals(IOptional<T> other)
+        {
+            if (!HasValue) return !other.HasValue;
+            if (!other.HasValue) return false;
+            return HasValue.Equals(other.HasValue) && EqualityComparer<T>.Default.Equals(_value, other.Value);
         }
 
         /// <inheritdoc />

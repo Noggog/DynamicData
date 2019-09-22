@@ -11,12 +11,12 @@ namespace DynamicData.Cache.Internal
     internal sealed class Transform<TDestination, TSource, TKey>
     {
         private readonly IObservable<IChangeSet<TSource, TKey>> _source;
-        private readonly Func<TSource, Optional<TSource>, TKey, TDestination> _transformFactory;
+        private readonly Func<TSource, IOptional<TSource>, TKey, TDestination> _transformFactory;
         private readonly Action<Error<TSource, TKey>> _exceptionCallback;
         private readonly bool _transformOnRefresh;
 
         public Transform(IObservable<IChangeSet<TSource, TKey>> source,
-            Func<TSource, Optional<TSource>, TKey, TDestination> transformFactory,
+            Func<TSource, IOptional<TSource>, TKey, TDestination> transformFactory,
             Action<Error<TSource, TKey>> exceptionCallback = null,
             bool transformOnRefresh = false)
         {

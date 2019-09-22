@@ -297,9 +297,9 @@ namespace DynamicData.List.Internal
         {
             public TObject Item { get; }
             public TGroupKey Group { get; set; }
-            public Optional<TGroupKey> PreviousGroup { get; }
+            public IOptional<TGroupKey> PreviousGroup { get; }
 
-            public ItemWithGroupKey(TObject item, TGroupKey group, Optional<TGroupKey> previousGroup)
+            public ItemWithGroupKey(TObject item, TGroupKey group, IOptional<TGroupKey> previousGroup)
             {
                 Item = item;
                 Group = group;

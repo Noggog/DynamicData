@@ -16,7 +16,7 @@ namespace DynamicData
         public IKeyValueCollection<TObject, TKey> SortedItems { get; }
         public IPageResponse Response { get; }
 
-        public PagedChangeSet(IKeyValueCollection<TObject, TKey> sortedItems, IEnumerable<Change<TObject, TKey>> updates, IPageResponse response)
+        public PagedChangeSet(IKeyValueCollection<TObject, TKey> sortedItems, IEnumerable<IChange<TObject, TKey>> updates, IPageResponse response)
             : base(updates)
         {
             Response = response;

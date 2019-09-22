@@ -14,7 +14,7 @@ namespace DynamicData
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TGroupKey">The type of the group key.</typeparam>
-    public interface IGrouping<TObject, TKey, out TGroupKey>
+    public interface IGrouping<out TObject, TKey, out TGroupKey>
     {
         /// <summary>
         /// Gets the group key
@@ -37,7 +37,7 @@ namespace DynamicData
         /// <value>
         /// The key values.
         /// </value>
-        IEnumerable<KeyValuePair<TKey, TObject>> KeyValues { get; }
+        IEnumerable<IKeyValue<TObject, TKey>> KeyValues { get; }
 
         /// <summary>
         /// Gets the count.
@@ -51,6 +51,6 @@ namespace DynamicData
         /// Fast indexed lookup
         /// </remarks>
         /// <param name="key">The key.</param>
-        Optional<TObject> Lookup(TKey key);
+        IOptional<TObject> Lookup(TKey key);
     }
 }

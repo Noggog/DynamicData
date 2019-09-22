@@ -108,7 +108,7 @@ namespace DynamicData.Tests.Cache
             var person = new Person("Adult1", 50);
             _source.AddOrUpdate(person);
 
-            var result = new List<Change<Person, string>>(3);
+            var result = new List<IChange<Person, string>>(3);
             var watch = _watcher.Watch("Adult1").Subscribe(result.Add);
 
             _scheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
@@ -126,7 +126,7 @@ namespace DynamicData.Tests.Cache
         {
             _source.AddOrUpdate(new Person("Adult1", 50));
 
-            var result = new List<Change<Person, string>>(3);
+            var result = new List<IChange<Person, string>>(3);
             var watch1 = _watcher.Watch("Adult1").Subscribe(result.Add);
             var watch2 = _watcher.Watch("Adult1").Subscribe(result.Add);
             var watch3 = _watcher.Watch("Adult1").Subscribe(result.Add);

@@ -36,9 +36,9 @@ namespace DynamicData.Cache.Internal
 
         public IEnumerable<TKey> Keys => _cache.Keys;
 
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _cache.KeyValues;
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _cache.KeyValues;
 
-        public Optional<TObject> Lookup(TKey key)
+        public IOptional<TObject> Lookup(TKey key)
         {
             var item = _cache.Lookup(key);
             return item.HasValue ? item.Value : Optional.None<TObject>();
@@ -129,19 +129,19 @@ namespace DynamicData.Cache.Internal
             return _keySelector(item);
         }
 
-        public IEnumerable<KeyValuePair<TKey, TObject>> GetKeyValues(IEnumerable<TObject> items)
+        public IEnumerable<IKeyValue<TObject, TKey>> GetKeyValues(IEnumerable<TObject> items)
         {
             if (_keySelector == null)
             {
                 throw new KeySelectorException("A key selector must be specified");
             }
 
-            return items.Select(t => new KeyValuePair<TKey, TObject>(_keySelector(t), t));
+            return items.Select(t => new KeyValue<TObject, TKey>(_keySelector(t), t));
         }
 
-        public void AddOrUpdate(IEnumerable<KeyValuePair<TKey, TObject>> itemsPairs)
+        public void AddOrUpdate(IEnumerable<IKeyValue<TObject, TKey>> itemsPairs)
         {
-            if (itemsPairs is IList<KeyValuePair<TKey, TObject>> list)
+            if (itemsPairs is IList<IKeyValue<TObject, TKey>> list)
             {
                 //zero allocation enumerator
                 var enumerable = EnumerableIList.Create(list);
@@ -159,7 +159,7 @@ namespace DynamicData.Cache.Internal
             }
         }
 
-        public void AddOrUpdate(KeyValuePair<TKey, TObject> item)
+        public void AddOrUpdate(IKeyValue<TObject, TKey> item)
         {
             _cache.AddOrUpdate(item.Value, item.Key);
         }
@@ -332,7 +332,7 @@ namespace DynamicData.Cache.Internal
             _cache.Remove(key);
         }
 
-        public Optional<TObject> Lookup(TObject item)
+        public IOptional<TObject> Lookup(TObject item)
         {
             if (_keySelector == null)
             {
@@ -353,7 +353,7 @@ namespace DynamicData.Cache.Internal
             Remove(key);
         }
 
-        public void Remove(IEnumerable<KeyValuePair<TKey, TObject>> items)
+        public void Remove(IEnumerable<IKeyValue<TObject, TKey>> items)
         {
             if (items == null)
             {
@@ -378,7 +378,7 @@ namespace DynamicData.Cache.Internal
             }
         }
 
-        public void Remove(KeyValuePair<TKey, TObject> item)
+        public void Remove(IKeyValue<TObject, TKey> item)
         {
             Remove(item.Key);
         }

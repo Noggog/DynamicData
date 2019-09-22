@@ -14,7 +14,7 @@ namespace DynamicData.Cache.Internal
     {
         private readonly ISourceCache<TObject, TKey> _source;
         private readonly Func<TObject, TObject, bool> _areEqual;
-        private readonly IEqualityComparer<KeyValuePair<TKey, TObject>> _keyComparer = new KeyComparer<TObject, TKey>();
+        private readonly IEqualityComparer<IKeyValue<TObject, TKey>> _keyComparer = new KeyComparer<TObject, TKey>();
 
         public EditDiff([NotNull] ISourceCache<TObject, TKey> source, [NotNull] Func<TObject, TObject, bool> areEqual)
         {
@@ -36,7 +36,8 @@ namespace DynamicData.Cache.Internal
                 var intersect = newItems
                         .Select(kvp => new { Original = innerCache.Lookup(kvp.Key), NewItem = kvp })
                         .Where(x => x.Original.HasValue && !_areEqual(x.Original.Value, x.NewItem.Value))
-                        .Select(x => new KeyValuePair<TKey, TObject>(x.NewItem.Key, x.NewItem.Value))
+                        .Select(x => new KeyValue<TObject, TKey>(x.NewItem.Key, x.NewItem.Value))
+                        .Select<KeyValue<TObject, TKey>, IKeyValue<TObject, TKey>>(i => i)
                         .ToArray();
 
                 innerCache.Remove(removes.Select(kvp => kvp.Key));

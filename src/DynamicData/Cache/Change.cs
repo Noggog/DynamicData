@@ -9,10 +9,47 @@ using DynamicData.Kernel;
 // ReSharper disable once CheckNamespace
 namespace DynamicData
 {
+    public interface IChange<out TObject, TKey>
+    {
+        /// <summary>
+        /// The unique key of the item which has changed
+        /// </summary>
+        TKey Key { get; }
+
+        /// <summary>
+        /// The  reason for the change
+        /// </summary>
+        ChangeReason Reason { get; }
+
+        /// <summary>
+        /// The item which has changed
+        /// </summary>
+        TObject Current { get; }
+
+        /// <summary>
+        /// The current index
+        /// </summary>
+        int CurrentIndex { get; }
+
+        /// <summary>
+        /// The previous change.
+        /// 
+        /// This is only when Reason==ChangeReason.Replace.
+        /// </summary>
+        IOptional<TObject> Previous { get; }
+
+        /// <summary>
+        /// The previous change.
+        /// 
+        /// This is only when Reason==ChangeReason.Update or ChangeReason.Move.
+        /// </summary>
+        int PreviousIndex { get; }
+    }
+
     /// <summary>
     ///   Container to describe a single change to a cache
     /// </summary>
-    public readonly struct Change<TObject, TKey> : IEquatable<Change<TObject, TKey>>
+    public readonly struct Change<TObject, TKey> : IChange<TObject, TKey>, IEquatable<Change<TObject, TKey>>
     {
         /// <summary>
         /// The unique key of the item which has changed
@@ -39,7 +76,7 @@ namespace DynamicData
         /// 
         /// This is only when Reason==ChangeReason.Replace.
         /// </summary>
-        public Optional<TObject> Previous { get; }
+        public IOptional<TObject> Previous { get; }
 
         /// <summary>
         /// The previous change.
@@ -107,7 +144,7 @@ namespace DynamicData
         /// or
         /// For ChangeReason.Change, must supply previous value
         /// </exception>
-        public Change(ChangeReason reason, TKey key, TObject current, Optional<TObject> previous, int currentIndex = -1, int previousIndex = -1)
+        public Change(ChangeReason reason, TKey key, TObject current, IOptional<TObject> previous, int currentIndex = -1, int previousIndex = -1)
             : this()
         {
             Current = current;
@@ -144,6 +181,17 @@ namespace DynamicData
         public static bool operator !=(Change<TObject, TKey> left, Change<TObject, TKey> right)
         {
             return !left.Equals(right);
+        }
+
+        /// <inheritdoc />
+        public bool Equals(IChange<TObject, TKey> other)
+        {
+            return EqualityComparer<TKey>.Default.Equals(Key, other.Key)
+                && Reason == other.Reason
+                && EqualityComparer<TObject>.Default.Equals(Current, other.Current)
+                && CurrentIndex == other.CurrentIndex
+                && Previous.Equals(other.Previous)
+                && PreviousIndex == other.PreviousIndex;
         }
 
         /// <inheritdoc />

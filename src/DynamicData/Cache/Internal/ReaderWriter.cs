@@ -157,17 +157,17 @@ namespace DynamicData.Cache.Internal
             }
         }
 
-        public KeyValuePair<TKey, TObject>[] KeyValues
+        public IKeyValue<TObject, TKey>[] KeyValues
         {
             get
             {
                 lock (_locker)
                 {
-                    KeyValuePair<TKey, TObject>[] result = new KeyValuePair<TKey, TObject>[_data.Count];
+                    IKeyValue<TObject, TKey>[] result = new IKeyValue<TObject, TKey>[_data.Count];
                     int i = 0;
                     foreach (var kvp in _data)
                     {
-                        result[i] = kvp;
+                        result[i] = new KeyValue<TObject, TKey>(kvp.Key, kvp.Value);
                         i++;
                     }
 
@@ -189,7 +189,7 @@ namespace DynamicData.Cache.Internal
             }
         }
 
-        public Optional<TObject> Lookup(TKey key)
+        public IOptional<TObject> Lookup(TKey key)
         {
             lock (_locker)
             {

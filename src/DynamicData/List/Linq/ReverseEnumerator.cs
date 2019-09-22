@@ -2,6 +2,7 @@
 // Roland Pheasant licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using DynamicData.Kernel;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +37,7 @@ namespace DynamicData.List.Linq
                     case ListChangeReason.Replace:
                         {
                             var newIndex = _length - change.Item.CurrentIndex - 1;
-                            yield return new Change<T>(ListChangeReason.Replace, change.Item.Current, change.Item.Previous.Value, newIndex, newIndex);
+                            yield return new Change<T>(ListChangeReason.Replace, change.Item.Current, new Optional<T>(change.Item.Previous.Value), newIndex, newIndex);
                             break;
                         }
 

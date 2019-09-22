@@ -13,12 +13,12 @@ namespace DynamicData.Cache.Internal
     internal sealed class TransformWithForcedTransform<TDestination, TSource, TKey>
     {
         private readonly IObservable<IChangeSet<TSource, TKey>> _source;
-        private readonly Func<TSource, Optional<TSource>, TKey, TDestination> _transformFactory;
+        private readonly Func<TSource, IOptional<TSource>, TKey, TDestination> _transformFactory;
         private readonly IObservable<Func<TSource, TKey, bool>> _forceTransform;
         private readonly Action<Error<TSource, TKey>> _exceptionCallback;
 
         public TransformWithForcedTransform(IObservable<IChangeSet<TSource, TKey>> source,
-            Func<TSource, Optional<TSource>, TKey, TDestination> transformFactory,
+            Func<TSource, IOptional<TSource>, TKey, TDestination> transformFactory,
             IObservable<Func<TSource, TKey, bool>> forceTransform,
             Action<Error<TSource, TKey>> exceptionCallback = null)
         {
@@ -55,7 +55,7 @@ namespace DynamicData.Cache.Internal
 
         }
 
-        private static IEnumerable<Change<TSource, TKey>> CaptureChanges(Cache<TSource, TKey>  cache, Func<TSource, TKey, bool> shouldTransform)
+        private static IEnumerable<IChange<TSource, TKey>> CaptureChanges(Cache<TSource, TKey>  cache, Func<TSource, TKey, bool> shouldTransform)
         {
             foreach (var kvp in cache.KeyValues)
             {

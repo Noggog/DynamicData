@@ -25,7 +25,7 @@ namespace DynamicData.Cache.Internal
                     return Optional<Change<TObject, TKey>>.None;
 
                 case ChangeReason.Remove when next.Reason == ChangeReason.Add:
-                    return new Change<TObject, TKey>(ChangeReason.Update, next.Key, next.Current, previousValue.Current, next.CurrentIndex, previousValue.CurrentIndex);
+                    return new Change<TObject, TKey>(ChangeReason.Update, next.Key, next.Current, new Optional<TObject>(previousValue.Current), next.CurrentIndex, previousValue.CurrentIndex);
 
                 case ChangeReason.Add when next.Reason == ChangeReason.Update:
                     return new Change<TObject, TKey>(ChangeReason.Add, next.Key, next.Current, next.CurrentIndex);

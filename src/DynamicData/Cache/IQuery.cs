@@ -21,7 +21,7 @@ namespace DynamicData
         /// Fast indexed lookup
         /// </remarks>
         /// <param name="key">The key.</param>
-        Optional<TObject> Lookup(TKey key);
+        IOptional<TObject> Lookup(TKey key);
 
         /// <summary>
         /// Gets the keys.
@@ -39,7 +39,7 @@ namespace DynamicData
         /// <value>
         /// The key values.
         /// </value>
-        IEnumerable<KeyValuePair<TKey, TObject>> KeyValues { get; }
+        IEnumerable<IKeyValue<TObject, TKey>> KeyValues { get; }
 
         /// <summary>
         /// Gets the count.

@@ -9,7 +9,7 @@ using DynamicData.Annotations;
 
 namespace DynamicData.List.Linq
 {
-    internal class AddKeyEnumerator<TObject, TKey> : IEnumerable<Change<TObject, TKey>>
+    internal class AddKeyEnumerator<TObject, TKey> : IEnumerable<IChange<TObject, TKey>>
     {
         private readonly IChangeSet<TObject> _source;
         private readonly Func<TObject, TKey> _keySelector;
@@ -28,7 +28,7 @@ namespace DynamicData.List.Linq
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public IEnumerator<Change<TObject, TKey>> GetEnumerator()
+        public IEnumerator<IChange<TObject, TKey>> GetEnumerator()
         {
             foreach (var change in _source)
             {

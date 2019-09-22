@@ -38,7 +38,7 @@ namespace DynamicData.Tests.Kernal
         {
             var current = new Person("Person", 10);
             var previous = new Person("Person", 9);
-            var update = new Change<Person, string>(ChangeReason.Update, "Person", current, previous);
+            var update = new Change<Person, string>(ChangeReason.Update, "Person", current, new Optional<Person>(previous));
 
             update.Key.Should().Be("Person");
             update.Reason.Should().Be(ChangeReason.Update);

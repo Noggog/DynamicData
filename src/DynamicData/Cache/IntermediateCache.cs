@@ -92,7 +92,7 @@ namespace DynamicData
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public IObservable<Change<TObject, TKey>> Watch(TKey key)
+        public IObservable<IChange<TObject, TKey>> Watch(TKey key)
         {
             return _innnerCache.Watch(key);
         }
@@ -118,7 +118,7 @@ namespace DynamicData
         /// <summary>
         /// Gets the key value pairs
         /// </summary>
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _innnerCache.KeyValues;
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _innnerCache.KeyValues;
 
         /// <summary>
         /// Gets the keys
@@ -133,7 +133,7 @@ namespace DynamicData
         /// </remarks>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public Optional<TObject> Lookup(TKey key)
+        public IOptional<TObject> Lookup(TKey key)
         {
             return _innnerCache.Lookup(key);
         }
@@ -167,22 +167,17 @@ namespace DynamicData
             return _innnerCache.TryGetValue(key, out value);
         }
 
-        /// <summary>
-        /// Returns enumerator of all key value pairs in cache
-        /// </summary>
-        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
-        {
-            return _innnerCache.KeyValues.GetEnumerator();
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
-        IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator()
+        /// <summary>
+        /// Returns enumerator of all key value pairs in cache
+        /// </summary>
+        public IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator()
         {
-            return _innnerCache.KeyValues.Select<KeyValuePair<TKey, TObject>, IKeyValue<TObject, TKey>>(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value)).GetEnumerator();
+            return _innnerCache.KeyValues.GetEnumerator();
         }
 
         #endregion

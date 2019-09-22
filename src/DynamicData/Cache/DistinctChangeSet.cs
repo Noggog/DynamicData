@@ -9,7 +9,7 @@ namespace DynamicData
 {
     internal class DistinctChangeSet<T> : ChangeSet<T, T>, IDistinctChangeSet<T>
     {
-        public DistinctChangeSet(IEnumerable<Change<T, T>> items)
+        public DistinctChangeSet(IEnumerable<IChange<T, T>> items)
             : base(items)
         {
         }

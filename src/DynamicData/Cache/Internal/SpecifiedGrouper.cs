@@ -74,7 +74,8 @@ namespace DynamicData.Cache.Internal
                             .Connect()
                             .Select(x =>
                             {
-                                var groups = x.Select(s => new Change<IGroup<TObject, TKey, TGroupKey>, TGroupKey>(s.Reason, s.Key, s.Current));
+                                var groups = x.Select<IChange<ManagedGroup<TObject, TKey, TGroupKey>, TGroupKey>, IChange<IGroup<TObject, TKey, TGroupKey>, TGroupKey>>(
+                                    s => new Change<IGroup<TObject, TKey, TGroupKey>, TGroupKey>(s.Reason, s.Key, s.Current));
                                 return new GroupChangeSet<TObject, TKey, TGroupKey>(groups);
                             })
                             .SubscribeSafe(observer);

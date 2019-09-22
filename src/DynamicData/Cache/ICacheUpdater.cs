@@ -24,12 +24,12 @@ namespace DynamicData
         /// <summary>
         /// Adds or updates the specified  key value pairs 
         /// </summary>
-        void AddOrUpdate(IEnumerable<KeyValuePair<TKey, TObject>> keyValuePairs);
+        void AddOrUpdate(IEnumerable<IKeyValue<TObject, TKey>> keyValuePairs);
 
         /// <summary>
         /// Adds or updates the specified key value pair
         /// </summary>
-        void AddOrUpdate(KeyValuePair<TKey, TObject> item);
+        void AddOrUpdate(IKeyValue<TObject, TKey> item);
 
         /// <summary>
         /// Adds or updates the specified item / key pair
@@ -96,12 +96,12 @@ namespace DynamicData
         /// <summary>
         /// Removes the specified  key value pairs 
         /// </summary>
-        void Remove(IEnumerable<KeyValuePair<TKey, TObject>> items);
+        void Remove(IEnumerable<IKeyValue<TObject, TKey>> items);
 
         /// <summary>
         ///Removes the specified key value pair
         /// </summary>
-        void Remove(KeyValuePair<TKey, TObject> item);
+        void Remove(IKeyValue<TObject, TKey> item);
 
         /// <summary>
         /// Updates using changes using the specified changeset
@@ -131,6 +131,6 @@ namespace DynamicData
         /// </summary>
         /// <param name="items">The items.</param>
         /// <returns></returns>
-        IEnumerable<KeyValuePair<TKey, TObject>> GetKeyValues(IEnumerable<TObject> items);
+        IEnumerable<IKeyValue<TObject, TKey>> GetKeyValues(IEnumerable<TObject> items);
     }
 }

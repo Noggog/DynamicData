@@ -49,9 +49,9 @@ namespace DynamicData.PLinq
                 _parallelisationOptions = parallelisationOptions;
             }
 
-            protected override IEnumerable<Change<TObject, TKey>> Refresh(IEnumerable<KeyValuePair<TKey, TObject>> items, Func<KeyValuePair<TKey, TObject>, Optional<Change<TObject, TKey>>> factory)
+            protected override IEnumerable<IChange<TObject, TKey>> Refresh(IEnumerable<IKeyValue<TObject, TKey>> items, Func<IKeyValue<TObject, TKey>, IOptional<IChange<TObject, TKey>>> factory)
             {
-                var keyValuePairs = items as KeyValuePair<TKey, TObject>[] ?? items.ToArray();
+                var keyValuePairs = items as IKeyValue<TObject, TKey>[] ?? items.ToArray();
 
                 return keyValuePairs.ShouldParallelise(_parallelisationOptions)
                     ? keyValuePairs.Parallelise(_parallelisationOptions).Select(factory).SelectValues()

@@ -20,11 +20,11 @@ namespace DynamicData.Cache.Internal
 
         public IEnumerable<TObject> Items => _cache.Items;
 
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _cache.KeyValues;
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _cache.KeyValues;
 
         public IEnumerable<TKey> Keys => _cache.Keys;
 
-        public Optional<TObject> Lookup(TKey key)
+        public IOptional<TObject> Lookup(TKey key)
         {
             return _cache.Lookup(key);
         }

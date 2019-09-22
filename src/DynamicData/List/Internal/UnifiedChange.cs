@@ -12,14 +12,14 @@ namespace DynamicData.List.Internal
     {
         public ListChangeReason Reason { get; }
         public T Current { get; }
-        public Optional<T> Previous { get; }
+        public IOptional<T> Previous { get; }
 
         public UnifiedChange(ListChangeReason reason, T current)
             : this(reason, current, Optional.None<T>())
         {
         }
 
-        public UnifiedChange(ListChangeReason reason, T current, Optional<T> previous)
+        public UnifiedChange(ListChangeReason reason, T current, IOptional<T> previous)
         {
             Reason = reason;
             Current = current;

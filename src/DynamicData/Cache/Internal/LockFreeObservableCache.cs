@@ -95,9 +95,9 @@ namespace DynamicData.Cache.Internal
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public IObservable<Change<TObject, TKey>> Watch(TKey key)
+        public IObservable<IChange<TObject, TKey>> Watch(TKey key)
         {
-            return Observable.Create<Change<TObject, TKey>>
+            return Observable.Create<IChange<TObject, TKey>>
             (
                 observer =>
                 {
@@ -146,7 +146,7 @@ namespace DynamicData.Cache.Internal
         /// <remarks>
         /// Fast indexed lookup
         /// </remarks>
-        public Optional<TObject> Lookup(TKey key)
+        public IOptional<TObject> Lookup(TKey key)
         {
             return _innerCache.Lookup(key);
         }
@@ -159,7 +159,7 @@ namespace DynamicData.Cache.Internal
         /// <summary>
         /// Gets the key value pairs
         /// </summary>
-        public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => _innerCache.KeyValues;
+        public IEnumerable<IKeyValue<TObject, TKey>> KeyValues => _innerCache.KeyValues;
 
         /// <summary>
         /// Gets the Items
@@ -214,7 +214,7 @@ namespace DynamicData.Cache.Internal
         }
 
         /// <inheritdoc />
-        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
+        public IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator()
         {
             return this.KeyValues.GetEnumerator();
         }
