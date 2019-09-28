@@ -11,7 +11,7 @@ namespace DynamicData
     /// Represents a list which supports range operations
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IExtendedList<T> : IList<T>
+    public interface IExtendedList<T> : IList<T>, IReadOnlyList<T>
     {
         /// <summary>
         /// Adds the elements of the specified collection to the end of the collection.
@@ -41,5 +41,9 @@ namespace DynamicData
         /// <param name="original">The original.</param>
         /// <param name="destination">The destination.</param>
         void Move(int original, int destination);
+
+        new T this[int index] { get; set; }
+
+        new int Count { get; }
     }
 }
