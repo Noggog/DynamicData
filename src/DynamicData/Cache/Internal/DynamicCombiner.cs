@@ -196,7 +196,7 @@ namespace DynamicData.Cache.Internal
 
         private class MergeContainer
         {
-            public Cache<TObject, TKey> Cache { get; } = new Cache<TObject, TKey>();
+            public InternalCache<TObject, TKey> Cache { get; } = new InternalCache<TObject, TKey>();
 
             public IObservable<IChangeSet<TObject, TKey>> Source { get; }
 

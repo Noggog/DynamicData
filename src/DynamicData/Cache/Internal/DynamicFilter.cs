@@ -28,7 +28,7 @@ namespace DynamicData.Cache.Internal
         {
             return Observable.Create<IChangeSet<TObject, TKey>>(observer =>
             {
-                var allData = new Cache<TObject, TKey>();
+                var allData = new InternalCache<TObject, TKey>();
                 var filteredData = new ChangeAwareCache<TObject, TKey>();
                 Func<TObject, bool> predicate = t => false;
 

@@ -9,7 +9,7 @@ using DynamicData.Kernel;
 
 namespace DynamicData.Cache.Internal
 {
-    internal class Cache<TObject, TKey> : ICache<TObject, TKey>
+    internal class InternalCache<TObject, TKey> : IInternalCache<TObject, TKey>
     {
         private readonly Dictionary<TKey, TObject> _data;
 
@@ -23,23 +23,23 @@ namespace DynamicData.Cache.Internal
         public TObject this[TKey key] => _data[key];
 
 
-        public static readonly Cache<TObject, TKey> Empty = new Cache<TObject, TKey>();
+        public static readonly InternalCache<TObject, TKey> Empty = new InternalCache<TObject, TKey>();
 
-        public Cache(int capacity = -1)
+        public InternalCache(int capacity = -1)
         {
             _data = capacity > 1 ? new Dictionary<TKey, TObject>(capacity) : new Dictionary<TKey, TObject>();
         }
 
-        public Cache(Dictionary<TKey, TObject> data)
+        public InternalCache(Dictionary<TKey, TObject> data)
         {
             _data = data;
         }
 
-        public Cache<TObject, TKey> Clone()
+        public InternalCache<TObject, TKey> Clone()
         {
             return _data== null
-                ? new Cache<TObject, TKey>()
-                : new Cache<TObject, TKey>(new Dictionary<TKey, TObject>(_data));
+                ? new InternalCache<TObject, TKey>()
+                : new InternalCache<TObject, TKey>(new Dictionary<TKey, TObject>(_data));
         }
 
         public void Clone(IChangeSet<TObject, TKey> changes)
@@ -147,21 +147,6 @@ namespace DynamicData.Cache.Internal
         public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
         {
             return _data.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator<IKeyValue<TObject, TKey>> ICache<TObject, TKey>.GetEnumerator()
-        {
-            throw new NotImplementedException();
         }
     }
 }

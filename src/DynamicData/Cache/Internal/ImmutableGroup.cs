@@ -10,14 +10,14 @@ namespace DynamicData.Cache.Internal
 {
     internal sealed class ImmutableGroup<TObject, TKey, TGroupKey> : IGrouping<TObject, TKey, TGroupKey>, IEquatable<ImmutableGroup<TObject, TKey, TGroupKey>>
     {
-        private readonly ICache<TObject, TKey> _cache;
+        private readonly IInternalCache<TObject, TKey> _cache;
 
         public TGroupKey Key { get;  }
 
-        internal ImmutableGroup(TGroupKey key, ICache<TObject, TKey> cache)
+        internal ImmutableGroup(TGroupKey key, IInternalCache<TObject, TKey> cache)
         {
             Key = key;
-            _cache = new Cache<TObject, TKey>(cache.Count);
+            _cache = new InternalCache<TObject, TKey>(cache.Count);
             cache.KeyValues.ForEach(kvp => _cache.AddOrUpdate(kvp.Value, kvp.Key));
         }
 

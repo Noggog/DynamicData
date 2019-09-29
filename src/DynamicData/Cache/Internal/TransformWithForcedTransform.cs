@@ -36,7 +36,7 @@ namespace DynamicData.Cache.Internal
                 var shared = _source.Synchronize(locker).Publish();
 
                 //capture all items so we can apply a forced transform
-                var cache = new Cache<TSource, TKey>();
+                var cache = new InternalCache<TSource, TKey>();
                 var cacheLoader = shared.Subscribe(changes => cache.Clone(changes));
 
                 //create change set of items where force refresh is applied
@@ -55,7 +55,7 @@ namespace DynamicData.Cache.Internal
 
         }
 
-        private static IEnumerable<Change<TSource, TKey>> CaptureChanges(Cache<TSource, TKey>  cache, Func<TSource, TKey, bool> shouldTransform)
+        private static IEnumerable<Change<TSource, TKey>> CaptureChanges(InternalCache<TSource, TKey>  cache, Func<TSource, TKey, bool> shouldTransform)
         {
             foreach (var kvp in cache.KeyValues)
             {

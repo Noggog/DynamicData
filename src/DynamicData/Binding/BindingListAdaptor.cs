@@ -59,7 +59,7 @@ namespace DynamicData.Binding
         private readonly int _refreshThreshold;
         private bool _loaded;
 
-        private readonly Cache<TObject, TKey> _cache = new Cache<TObject, TKey>();
+        private readonly InternalCache<TObject, TKey> _cache = new InternalCache<TObject, TKey>();
 
         /// <inheritdoc />
         public BindingListAdaptor([NotNull] BindingList<TObject> list, int refreshThreshold = 25)

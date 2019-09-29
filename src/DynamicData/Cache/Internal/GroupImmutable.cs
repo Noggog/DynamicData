@@ -231,7 +231,7 @@ namespace DynamicData.Cache.Internal
                 return new ImmutableGroup<TObject, TKey, TGroupKey>(grouping.Key, grouping.Cache);
             }
 
-            private static IGrouping<TObject, TKey, TGroupKey> GetGroupState(TGroupKey key, ICache<TObject,TKey> cache)
+            private static IGrouping<TObject, TKey, TGroupKey> GetGroupState(TGroupKey key, IInternalCache<TObject,TKey> cache)
             {
                 return new ImmutableGroup<TObject, TKey, TGroupKey>(key, cache);
             }
@@ -239,12 +239,12 @@ namespace DynamicData.Cache.Internal
             private class GroupCache
             {
                 public TGroupKey Key { get;  }
-                public Cache<TObject, TKey> Cache { get;  }
+                public InternalCache<TObject, TKey> Cache { get;  }
 
                 public GroupCache(TGroupKey key)
                 {
                     Key = key;
-                    Cache = new Cache<TObject, TKey>();
+                    Cache = new InternalCache<TObject, TKey>();
                 }
             }
 

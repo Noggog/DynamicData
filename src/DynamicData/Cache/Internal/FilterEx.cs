@@ -10,7 +10,7 @@ namespace DynamicData.Cache.Internal
     {
         public static IChangeSet<TObject, TKey> RefreshFilteredFrom<TObject, TKey>(
             this ChangeAwareCache<TObject, TKey> filtered,
-            Cache<TObject, TKey> allData,
+            InternalCache<TObject, TKey> allData,
             Func<TObject, bool> predicate)
         {
             if (allData.Count == 0)

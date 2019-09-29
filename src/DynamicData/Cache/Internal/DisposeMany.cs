@@ -26,7 +26,7 @@ namespace DynamicData.Cache.Internal
             return Observable.Create<IChangeSet<TObject, TKey>>(observer =>
             {
                 var locker = new object();
-                var cache = new Cache<TObject, TKey>();
+                var cache = new InternalCache<TObject, TKey>();
                 var subscriber = _source
                     .Synchronize(locker)
                     .Do(changes => RegisterForRemoval(changes, cache), observer.OnError)
@@ -45,7 +45,7 @@ namespace DynamicData.Cache.Internal
             });
         }
 
-        private void RegisterForRemoval(IChangeSet<TObject, TKey> changes, Cache<TObject, TKey> cache)
+        private void RegisterForRemoval(IChangeSet<TObject, TKey> changes, InternalCache<TObject, TKey> cache)
         {
             changes.ForEach(change =>
             {

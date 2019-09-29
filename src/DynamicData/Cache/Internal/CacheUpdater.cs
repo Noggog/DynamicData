@@ -12,10 +12,10 @@ namespace DynamicData.Cache.Internal
 {
     internal class CacheUpdater<TObject, TKey> : ISourceUpdater<TObject, TKey>
     {
-        private readonly ICache<TObject, TKey> _cache;
+        private readonly IInternalCache<TObject, TKey> _cache;
         private readonly Func<TObject, TKey> _keySelector;
 
-        public CacheUpdater(ICache<TObject, TKey> cache, Func<TObject, TKey> keySelector = null)
+        public CacheUpdater(IInternalCache<TObject, TKey> cache, Func<TObject, TKey> keySelector = null)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             _keySelector = keySelector;
@@ -28,7 +28,7 @@ namespace DynamicData.Cache.Internal
                 throw new ArgumentNullException(nameof(data));
             }
 
-            _cache = new Cache<TObject, TKey>(data);
+            _cache = new InternalCache<TObject, TKey>(data);
             _keySelector = keySelector;
         }
 
@@ -419,9 +419,6 @@ namespace DynamicData.Cache.Internal
             return _cache.KeyValues.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _cache.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }
 }

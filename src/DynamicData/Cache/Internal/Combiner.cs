@@ -15,7 +15,7 @@ namespace DynamicData.Cache.Internal
     /// </summary>
     internal sealed class Combiner<TObject, TKey>
     {
-        private readonly IList<Cache<TObject, TKey>> _sourceCaches = new List<Cache<TObject, TKey>>();
+        private readonly IList<InternalCache<TObject, TKey>> _sourceCaches = new List<InternalCache<TObject, TKey>>();
         private readonly ChangeAwareCache<TObject, TKey> _combinedCache = new ChangeAwareCache<TObject, TKey>();
 
         private readonly object _locker = new object();
@@ -34,7 +34,7 @@ namespace DynamicData.Cache.Internal
             var disposable = new CompositeDisposable();
             lock (_locker)
             {
-                var caches = Enumerable.Range(0, source.Length).Select(_ => new Cache<TObject, TKey>());
+                var caches = Enumerable.Range(0, source.Length).Select(_ => new InternalCache<TObject, TKey>());
                 _sourceCaches.AddRange(caches);
 
                 foreach (var pair in source.Zip(_sourceCaches, (item, cache) => new { Item = item, Cache = cache }))
@@ -47,7 +47,7 @@ namespace DynamicData.Cache.Internal
             return disposable;
         }
 
-        private void Update(Cache<TObject, TKey> cache, IChangeSet<TObject, TKey> updates)
+        private void Update(InternalCache<TObject, TKey> cache, IChangeSet<TObject, TKey> updates)
         {
             IChangeSet<TObject, TKey> notifications;
 

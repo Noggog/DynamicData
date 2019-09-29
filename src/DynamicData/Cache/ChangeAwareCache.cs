@@ -16,8 +16,8 @@ namespace DynamicData
     /// 
     /// Used for creating custom operators
     /// </summary>
-    /// <seealso cref="DynamicData.ICache{TObject, TKey}" />
-    public sealed class  ChangeAwareCache<TObject, TKey> : ICache<TObject, TKey>
+    /// <seealso cref="DynamicData.IInternalCache{TObject, TKey}" />
+    public sealed class  ChangeAwareCache<TObject, TKey> : IInternalCache<TObject, TKey>
     {
         private ChangeSet<TObject, TKey> _changes;
 
@@ -273,11 +273,6 @@ namespace DynamicData
             return copy;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
         public IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator()
         {
             foreach (var item in this._data)
@@ -285,7 +280,5 @@ namespace DynamicData
                 yield return new KeyValue<TObject, TKey>(item.Key, item.Value);
             }
         }
-
-        IEnumerator<KeyValuePair<TKey, TObject>> IEnumerable<KeyValuePair<TKey, TObject>>.GetEnumerator() => this._data.GetEnumerator();
     }
 }

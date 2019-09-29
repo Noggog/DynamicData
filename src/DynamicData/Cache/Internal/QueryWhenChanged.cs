@@ -24,11 +24,11 @@ namespace DynamicData.Cache.Internal
             if (_itemChangedTrigger == null)
             {
                 return _source
-                    .Scan((Cache<TObject, TKey>)null, (cache, changes) =>
+                    .Scan((InternalCache<TObject, TKey>)null, (cache, changes) =>
                     {
                         if (cache == null)
                         {
-                            cache = new Cache<TObject, TKey>(changes.Count);
+                            cache = new InternalCache<TObject, TKey>(changes.Count);
                         }
 
                         cache.Clone(changes);
@@ -39,7 +39,7 @@ namespace DynamicData.Cache.Internal
             return _source.Publish(shared =>
             {
                 var locker = new object();
-                var state = new Cache<TObject, TKey>();
+                var state = new InternalCache<TObject, TKey>();
 
                 var inlineChange = shared
                     .MergeMany(_itemChangedTrigger)
