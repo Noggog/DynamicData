@@ -153,5 +153,15 @@ namespace DynamicData.Cache.Internal
         {
             return this.GetEnumerator();
         }
+
+        IEnumerator<IKeyValue<TObject, TKey>> IEnumerable<IKeyValue<TObject, TKey>>.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator<IKeyValue<TObject, TKey>> ICache<TObject, TKey>.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -273,14 +273,19 @@ namespace DynamicData
             return copy;
         }
 
-        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
-        {
-            return _data.GetEnumerator();
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
+
+        public IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator()
+        {
+            foreach (var item in this._data)
+            {
+                yield return new KeyValue<TObject, TKey>(item.Key, item.Value);
+            }
+        }
+
+        IEnumerator<KeyValuePair<TKey, TObject>> IEnumerable<KeyValuePair<TKey, TObject>>.GetEnumerator() => this._data.GetEnumerator();
     }
 }

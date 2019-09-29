@@ -416,7 +416,7 @@ namespace DynamicData.Cache.Internal
 
         public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
         {
-            return _cache.GetEnumerator();
+            return _cache.KeyValues.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

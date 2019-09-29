@@ -171,8 +171,6 @@ namespace DynamicData.Cache.Internal
         /// </summary>
         public int Count => _innerCache.Count;
 
-        IEnumerable<TObject> IReadOnlyCache<TObject, TKey>.Values => this.Items;
-
         /// <inheritdoc />
         public TObject this[TKey key] => this._innerCache[key];
 

@@ -7,18 +7,11 @@ using System.Collections.Generic;
 // ReSharper disable once CheckNamespace
 namespace DynamicData
 {
-    /// <summary>
-    /// A cache which captures all changes which are made to it. These changes are recorded until CaptureChanges() at which point thw changes are cleared.
-    /// 
-    /// Used for creating custom operators
-    /// </summary>
-    /// <typeparam name="TObject">The type of the object.</typeparam>
-    /// <typeparam name="TKey">The type of the key.</typeparam>
-    /// <seealso cref="DynamicData.IQuery{TObject, TKey}" />
-    public interface ICache<TObject, TKey> : IQuery<TObject, TKey>, IReadOnlyDictionary<TKey, TObject>
+    public interface ICache<TObject, TKey> : IQuery<TObject, TKey>, IReadOnlyDictionary<TKey, TObject>, IReadOnlyCache<TObject, TKey>
     {
         new IEnumerable<TKey> Keys { get; }
         new int Count { get; }
+        new IEnumerable<TObject> Items { get; }
 
         /// <summary>
         /// Clones the cache from the specified changes
@@ -64,5 +57,9 @@ namespace DynamicData
         /// Refreshes the item matching the specified key
         /// </summary>
         void Refresh(TKey key);
+
+        new bool ContainsKey(TKey key);
+
+        new IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator();
     }
 }

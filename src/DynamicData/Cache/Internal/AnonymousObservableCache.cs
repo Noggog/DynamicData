@@ -13,8 +13,6 @@ namespace DynamicData.Cache.Internal
     {
         private readonly IObservableCache<TObject, TKey> _cache;
 
-        public IEnumerable<TObject> Values => _cache.Values;
-
         public TObject this[TKey key] => _cache[key];
 
         public AnonymousObservableCache(IObservable<IChangeSet<TObject, TKey>> source)

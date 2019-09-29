@@ -97,8 +97,6 @@ namespace DynamicData
             return _innnerCache.Watch(key);
         }
 
-        IEnumerable<TObject> IReadOnlyCache<TObject, TKey>.Values => this.Items;
-
         /// <summary>
         /// Gets value for given key.  Throws exception if missing.
         /// </summary>

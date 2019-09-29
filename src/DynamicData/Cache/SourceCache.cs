@@ -22,8 +22,6 @@ namespace DynamicData
         private readonly ObservableCache<TObject, TKey> _innerCache;
         private bool _isDisposed;
 
-        IEnumerable<TObject> IReadOnlyCache<TObject, TKey>.Values => this.Items;
-
         /// <summary> 
         /// Gets value for given key.  Throws exception if missing. 
         /// </summary> 

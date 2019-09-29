@@ -48,7 +48,7 @@ namespace DynamicData
         //
         // Returns:
         //     An enumerable collection that contains the values in the read-only dictionary.
-        IEnumerable<TValue> Values { get; }
+        IEnumerable<TValue> Items { get; }
 
         //
         // Summary:
