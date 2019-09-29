@@ -125,12 +125,29 @@ namespace DynamicData
         IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
 
         public void Set(TObject item) => this.Edit(updater => updater.AddOrUpdate(item));
+
         public void Set(TObject item, IEqualityComparer<TObject> equalityComparer) => this.Edit(updater => updater.AddOrUpdate(item, equalityComparer ?? EqualityComparer<TObject>.Default));
+
         public void Set(IEnumerable<TObject> items) => this.Edit(updater => updater.AddOrUpdate(items));
-        public void Remove(TKey key) => this.Edit(updater => updater.Remove(key));
-        public void Remove(TObject obj) => this.Edit(updater => updater.Remove(obj));
+
+        public bool Remove(TKey key)
+        {
+            bool ret = false;
+            this.Edit(updater => ret = updater.RemoveKey(key));
+            return ret;
+        }
+
+        public bool Remove(TObject obj)
+        {
+            bool ret = false;
+            this.Edit(updater => ret = updater.Remove(obj));
+            return ret;
+        }
+
         public void Remove(IEnumerable<TKey> keys) => this.Edit(updater => updater.Remove(keys));
+
         public void Remove(IEnumerable<TObject> objs) => this.Edit(updater => updater.Remove(objs));
+
         public void Clear() => this.Edit(updater => updater.Clear());
 
         public TObject TryCreateValue(TKey key, Func<TKey, TObject> createFunc)

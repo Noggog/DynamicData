@@ -129,19 +129,20 @@ namespace DynamicData
         }
 
         /// <inheritdoc />
-        public void Remove(TKey key)
+        public bool Remove(TKey key)
         {
             if (_data == null)
             {
-                return;
+                return false;
             }
 
             if (_data.TryGetValue(key, out var existingItem))
             {
                 EnsureInitialised();
                 _changes.Add(new Change<TObject, TKey>(ChangeReason.Remove, key, existingItem));
-                _data.Remove(key);
+                return _data.Remove(key);
             }
+            return false;
         }
 
         /// <summary>

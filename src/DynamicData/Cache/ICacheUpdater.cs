@@ -85,13 +85,13 @@ namespace DynamicData
         /// <summary>
         ///Remove the specified keys
         /// </summary>
-        void Remove(TKey key);
+        bool Remove(TKey key);
 
         /// <summary>
         /// Overload of remove due to ambiguous method when TObject and TKey are of the same type
         /// </summary>
         /// <param name="key">The key.</param>
-        void RemoveKey(TKey key);
+        bool RemoveKey(TKey key);
 
         /// <summary>
         /// Removes the specified  key value pairs 

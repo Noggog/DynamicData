@@ -25,13 +25,6 @@ namespace DynamicData
         /// <summary>
         /// Adds or updates the item using the specified key
         /// </summary>
-        /// <param name="item">The item.</param>
-        /// <param name="equalityComparer">The equality comparer used to determine whether a new item is the same as an existing cached item</param>
-        void Set(TObject item, IEqualityComparer<TObject> equalityComparer);
-
-        /// <summary>
-        /// Adds or updates the item using the specified key
-        /// </summary>
         /// <param name="items">The items.</param>
         void Set(IEnumerable<TObject> items);
 
@@ -39,13 +32,13 @@ namespace DynamicData
         /// Removes the item matching the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        void Remove(TKey key);
+        bool Remove(TKey key);
 
         /// <summary>
         /// Removes the specified key retrieved from the given item.
         /// </summary>
         /// <param name="obj">An object to retrieve a key from to remove</param>
-        void Remove(TObject obj);
+        bool Remove(TObject obj);
 
         /// <summary>
         /// Removes all items matching the specified keys

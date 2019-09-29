@@ -96,12 +96,13 @@ namespace DynamicData.Cache.Internal
             }
         }
 
-        public void Remove(TKey key)
+        public bool Remove(TKey key)
         {
             if (_data.ContainsKey(key))
             {
-                _data.Remove(key);
+                return _data.Remove(key);
             }
+            return false;
         }
 
         public void Clear()

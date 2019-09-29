@@ -321,7 +321,7 @@ namespace DynamicData.Cache.Internal
             _cache.Remove(keys);
         }
 
-        public void Remove(TObject item)
+        public bool Remove(TObject item)
         {
             if (_keySelector == null)
             {
@@ -329,7 +329,7 @@ namespace DynamicData.Cache.Internal
             }
 
             var key = _keySelector(item);
-            _cache.Remove(key);
+            return _cache.Remove(key);
         }
 
         public Optional<TObject> Lookup(TObject item)
@@ -343,14 +343,14 @@ namespace DynamicData.Cache.Internal
             return Lookup(key);
         }
 
-        public void Remove(TKey key)
+        public bool Remove(TKey key)
         {
-            _cache.Remove(key);
+            return _cache.Remove(key);
         }
 
-        public void RemoveKey(TKey key)
+        public bool RemoveKey(TKey key)
         {
-            Remove(key);
+            return Remove(key);
         }
 
         public void Remove(IEnumerable<KeyValuePair<TKey, TObject>> items)
