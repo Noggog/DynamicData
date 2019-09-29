@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Generic;
 // ReSharper disable once CheckNamespace
 namespace DynamicData
 {
@@ -12,7 +13,7 @@ namespace DynamicData
     /// </summary>
     /// <typeparam name="TObject">The type of the object.</typeparam>
     /// <typeparam name="TKey">The type of the key.</typeparam>
-    public interface ISourceCache<TObject, TKey> : IObservableCache<TObject, TKey>
+    public interface ISourceCache<TObject, TKey> : IObservableCache<TObject, TKey>, ICache<TObject, TKey>
     {
         /// <summary>
         /// Action to apply a batch update to a cache. Multiple update methods can be invoked within a single batch operation.
@@ -21,5 +22,11 @@ namespace DynamicData
         /// </summary>
         /// <param name="updateAction">The update action.</param>
         void Edit(Action<ISourceUpdater<TObject, TKey>> updateAction);
+
+        /// <inheritdoc />
+        new IEnumerable<TObject> Items { get; }
+
+        /// <inheritdoc />
+        new int Count { get; }
     }
 }

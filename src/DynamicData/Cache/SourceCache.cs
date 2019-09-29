@@ -112,14 +112,6 @@ namespace DynamicData
             return _innerCache.TryGetValue(key, out value);
         }
 
-        /// <summary> 
-        /// Returns enumerator of all key value pairs in cache 
-        /// </summary> 
-        public IEnumerator<KeyValuePair<TKey, TObject>> GetEnumerator()
-        {
-            return _innerCache.KeyValues.GetEnumerator();
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
@@ -129,6 +121,45 @@ namespace DynamicData
         {
             return _innerCache.KeyValues.Select<KeyValuePair<TKey, TObject>, IKeyValue<TObject, TKey>>(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value)).GetEnumerator();
         }
+
+        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
+
+        public void Set(TObject item) => this.Edit(updater => updater.AddOrUpdate(item));
+        public void Set(TObject item, IEqualityComparer<TObject> equalityComparer) => this.Edit(updater => updater.AddOrUpdate(item, equalityComparer ?? EqualityComparer<TObject>.Default));
+        public void Set(IEnumerable<TObject> items) => this.Edit(updater => updater.AddOrUpdate(items));
+        public void Remove(TKey key) => this.Edit(updater => updater.Remove(key));
+        public void Remove(TObject obj) => this.Edit(updater => updater.Remove(obj));
+        public void Remove(IEnumerable<TKey> keys) => this.Edit(updater => updater.Remove(keys));
+        public void Remove(IEnumerable<TObject> objs) => this.Edit(updater => updater.Remove(objs));
+        public void Clear() => this.Edit(updater => updater.Clear());
+
+        public TObject TryCreateValue(TKey key, Func<TKey, TObject> createFunc)
+        {
+            TObject ret = default;
+            this.Edit((dict) =>
+            {
+                if (dict.ContainsKey(key))
+                {
+                    ret = dict[key];
+                }
+                else
+                {
+                    ret = createFunc(key);
+                    dict.AddOrUpdate(ret);
+                }
+            });
+            return ret;
+        }
+
+        public IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator()
+        {
+            foreach (var item in this._innerCache.KeyValues)
+            {
+                yield return new KeyValue<TObject, TKey>(item.Key, item.Value);
+            }
+        }
+
+        IEnumerator<KeyValuePair<TKey, TObject>> IEnumerable<KeyValuePair<TKey, TObject>>.GetEnumerator() => _innerCache.KeyValues.GetEnumerator();
         #endregion
     }
 }

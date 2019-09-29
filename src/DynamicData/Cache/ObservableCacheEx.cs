@@ -5512,65 +5512,6 @@ namespace DynamicData
         }
 
         /// <summary>
-        /// <summary>
-        /// Adds or updates the cache with the specified items.
-        /// </summary>
-        /// </summary>
-        /// <typeparam name="TObject">The type of the object.</typeparam>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="items">The items.</param>
-        /// <exception cref="System.ArgumentNullException">source</exception>
-        public static void Set<TObject, TKey>(this ISourceCache<TObject, TKey> source, IEnumerable<TObject> items)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            source.Edit(updater => updater.AddOrUpdate(items));
-        }
-
-        /// <summary>
-        /// Removes the specified item from the cache. 
-        /// 
-        /// If the item is not contained in the cache then the operation does nothing.
-        /// </summary>
-        /// <typeparam name="TObject">The type of the object.</typeparam>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="item">The item.</param>
-        /// <exception cref="System.ArgumentNullException">source</exception>
-        public static void Remove<TObject, TKey>(this ISourceCache<TObject, TKey> source, TObject item)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            source.Edit(updater => updater.Remove(item));
-        }
-
-        /// <summary>
-        /// Removes the specified key from the cache.
-        /// If the item is not contained in the cache then the operation does nothing.
-        /// </summary>
-        /// <typeparam name="TObject">The type of the object.</typeparam>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="key">The key.</param>
-        /// <exception cref="System.ArgumentNullException">source</exception>
-        public static void Remove<TObject, TKey>(this ISourceCache<TObject, TKey> source, TKey key)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            source.Edit(updater => updater.Remove(key));
-        }
-
-        /// <summary>
         /// Removes the specified key from the cache.
         /// If the item is not contained in the cache then the operation does nothing.
         /// </summary>
@@ -5587,46 +5528,6 @@ namespace DynamicData
             }
 
             source.Edit(updater => updater.RemoveKey(key));
-        }
-
-        /// <summary>
-        /// Removes the specified items from the cache. 
-        /// 
-        /// Any items not contained in the cache are ignored
-        /// </summary>
-        /// <typeparam name="TObject">The type of the object.</typeparam>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="items">The items.</param>
-        /// <exception cref="System.ArgumentNullException">source</exception>
-        public static void Remove<TObject, TKey>(this ISourceCache<TObject, TKey> source, IEnumerable<TObject> items)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            source.Edit(updater => updater.Remove(items));
-        }
-
-        /// <summary>
-        /// Removes the specified keys from the cache. 
-        /// 
-        /// Any keys not contained in the cache are ignored
-        /// </summary>
-        /// <typeparam name="TObject">The type of the object.</typeparam>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="keys">The keys.</param>
-        /// <exception cref="System.ArgumentNullException">source</exception>
-        public static void Remove<TObject, TKey>(this ISourceCache<TObject, TKey> source, IEnumerable<TKey> keys)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            source.Edit(updater => updater.Remove(keys));
         }
 
         /// <summary>
@@ -5647,23 +5548,6 @@ namespace DynamicData
             }
 
             source.Edit(updater => updater.RemoveKeys(keys));
-        }
-
-        /// <summary>
-        /// Clears all data
-        /// </summary>
-        /// <typeparam name="TObject">The type of the object.</typeparam>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <exception cref="System.ArgumentNullException">source</exception>
-        public static void Clear<TObject, TKey>(this ISourceCache<TObject, TKey> source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            source.Edit(updater => updater.Clear());
         }
 
         /// <summary>
@@ -5899,24 +5783,6 @@ namespace DynamicData
             }
 
             return source.Subscribe(changes => detination.Edit(updater => updater.Clone(changes)));
-        }
-
-        public static TObject TryCreateValue<TObject, TKey>(this ISourceCache<TObject, TKey> source, TKey key, Func<TKey, TObject> createFunc)
-        {
-            TObject ret = default;
-            source.Edit((dict) =>
-            {
-                if (dict.ContainsKey(key))
-                {
-                    ret = dict[key];
-                }
-                else
-                {
-                    ret = createFunc(key);
-                    dict.AddOrUpdate(ret);
-                }
-            });
-            return ret;
         }
         #endregion
 
