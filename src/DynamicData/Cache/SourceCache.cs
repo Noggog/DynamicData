@@ -122,8 +122,6 @@ namespace DynamicData
             return _innerCache.KeyValues.Select<KeyValuePair<TKey, TObject>, IKeyValue<TObject, TKey>>(kv => new KeyValue<TObject, TKey>(kv.Key, kv.Value)).GetEnumerator();
         }
 
-        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this.Items;
-
         public void Set(TObject item) => this.Edit(updater => updater.AddOrUpdate(item));
 
         public void Set(TObject item, IEqualityComparer<TObject> equalityComparer) => this.Edit(updater => updater.AddOrUpdate(item, equalityComparer ?? EqualityComparer<TObject>.Default));
@@ -175,8 +173,6 @@ namespace DynamicData
                 yield return new KeyValue<TObject, TKey>(item.Key, item.Value);
             }
         }
-
-        IEnumerator<KeyValuePair<TKey, TObject>> IEnumerable<KeyValuePair<TKey, TObject>>.GetEnumerator() => _innerCache.KeyValues.GetEnumerator();
         #endregion
     }
 }

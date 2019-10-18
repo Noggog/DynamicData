@@ -8,7 +8,7 @@ using System.Collections.Generic;
 // ReSharper disable once CheckNamespace
 namespace DynamicData
 {
-    public interface ICache<TObject, TKey> : IReadOnlyDictionary<TKey, TObject>, IReadOnlyCache<TObject, TKey>
+    public interface ICache<TObject, TKey> : IReadOnlyCache<TObject, TKey>
     {
         /// <inheritdoc />
         new IEnumerable<TKey> Keys { get; }

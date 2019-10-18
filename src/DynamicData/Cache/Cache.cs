@@ -22,8 +22,6 @@ namespace Noggog
 
         public IEnumerable<KeyValuePair<TKey, TObject>> KeyValues => this._dict;
 
-        IEnumerable<TObject> IReadOnlyDictionary<TKey, TObject>.Values => this._dict.Values;
-
         public Cache(Func<TObject, TKey> keySelector)
         {
             this._keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
@@ -116,8 +114,6 @@ namespace Noggog
                 }
             }
         }
-
-        IEnumerator<KeyValuePair<TKey, TObject>> IEnumerable<KeyValuePair<TKey, TObject>>.GetEnumerator() => this._dict.GetEnumerator();
 
         public IEnumerator<IKeyValue<TObject, TKey>> GetEnumerator()
         {
